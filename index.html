@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRY147 - Plataforma Actividades Extracurriculares</title>
+
+  <!-- Fuente estilo Vuetify -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .app-container {
+      background: #ffffff;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 500;
+      color: #1976d2;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 32px;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #1976d2;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #388e3c;
+      color: white;
+    }
+
+    .btn-tertiary {
+      background: #f57c00;
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .footer {
+      margin-top: 32px;
+      font-size: 12px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <div class="logo">PRY147</div>
+    <div class="subtitle">Sistema de Actividades Extracurriculares</div>
+
+    <div class="btn-group">
+
+      <!-- ISILMANAGER -->
+      <a href="isilmanager.html" class="btn btn-primary">
+        <span class="material-icons">admin_panel_settings</span>
+        ISILMANAGER (Administración)
+      </a>
+
+      <!-- DOCENTE -->
+      <a href="isilnetdocente.html" class="btn btn-secondary">
+        <span class="material-icons">school</span>
+        ISILNET Docente
+      </a>
+
+      <!-- ALUMNO -->
+      <a href="isilnetalumno.html" class="btn btn-tertiary">
+        <span class="material-icons">person</span>
+        ISILNET Estudiante
+      </a>
+
+    </div>
+
+    <div class="footer">
+      © 2026 - Proyecto PRY147 | Demo UI
+    </div>
+
+  </div>
+
+</body>
+</html>

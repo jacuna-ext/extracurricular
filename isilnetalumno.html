@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISILNET Estudiante | PRY147 (Demo Funcional)</title>
+
+  <!-- Fuente estilo Vuetify -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    :root{
+      --primary:#673ab7;
+      --bg:#f5f7fa;
+      --surface:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --shadow:0 8px 24px rgba(0,0,0,.10);
+      --shadow-sm:0 4px 12px rgba(0,0,0,.08);
+      --radius:14px;
+      --ok:#2e7d32;
+      --warn:#ef6c00;
+      --danger:#d32f2f;
+      --info:#1976d2;
+    }
+
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:'Roboto',sans-serif;
+      color:var(--text);
+      background:var(--bg);
+    }
+
+    .app{
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      height:100vh;
+      overflow:hidden;
+    }
+
+    /* Drawer */
+    .drawer{
+      background:var(--surface);
+      border-right:1px solid var(--border);
+      padding:18px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:12px 10px;
+      border-radius:12px;
+      background:linear-gradient(180deg, rgba(103,58,183,.10), rgba(103,58,183,.02));
+    }
+
+    .brand .badge{
+      width:38px;
+      height:38px;
+      border-radius:12px;
+      background:var(--primary);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      box-shadow:var(--shadow-sm);
+      flex:0 0 auto;
+    }
+
+    .brand .title{ font-weight:900; letter-spacing:.2px; }
+    .brand .subtitle{ font-size:12px; color:var(--muted); margin-top:2px; }
+
+    .nav-section-label{
+      font-size:12px;
+      color:var(--muted);
+      padding:10px 10px 6px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .nav{ display:flex; flex-direction:column; gap:6px; padding:6px; }
+
+    .nav-item{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 10px;
+      border-radius:12px;
+      cursor:pointer;
+      user-select:none;
+      transition:.15s ease;
+    }
+
+    .nav-item:hover{ background:#f1f5f9; }
+
+    .nav-item.active{ background:rgba(103,58,183,.12); color:var(--primary); }
+
+    .nav-item .material-icons{ font-size:20px; }
+
+    .drawer-footer{
+      margin-top:auto;
+      padding:10px;
+      border-top:1px solid var(--border);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:#f8fafc;
+      border:1px solid var(--border);
+      color:var(--muted);
+      font-size:12px;
+      width:fit-content;
+    }
+
+    .link{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      text-decoration:none;
+      color:var(--primary);
+      font-weight:600;
+      padding:8px 10px;
+      border-radius:10px;
+      transition:.15s ease;
+    }
+    .link:hover{ background:rgba(103,58,183,.10); }
+
+    /* Main */
+    .main{ display:flex; flex-direction:column; overflow:hidden; }
+
+    .topbar{
+      height:64px;
+      background:var(--surface);
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 18px;
+      gap:12px;
+    }
+
+    .page-title{ font-weight:900; letter-spacing:.2px; }
+    .page-hint{ font-size:12px; color:var(--muted); margin-top:2px; }
+
+    .topbar-right{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      transition:.15s ease;
+      font-weight:700;
+      font-size:13px;
+      white-space:nowrap;
+    }
+
+    .btn:hover{ box-shadow:var(--shadow-sm); transform:translateY(-1px); }
+
+    .btn-primary{ border-color:rgba(103,58,183,.25); background:rgba(103,58,183,.10); color:var(--primary); }
+
+    .content{ padding:18px; overflow:auto; }
+
+    .grid{ display:grid; grid-template-columns: repeat(12, 1fr); gap:14px; }
+
+    .card{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow-sm);
+      padding:16px;
+    }
+
+    .card h3{ margin:0 0 10px; font-size:16px; }
+    .muted{ color:var(--muted); }
+    .sub{ color:var(--muted); font-size:12px; line-height:1.45; }
+
+    .section{ display:none; }
+    .section.active{ display:block; }
+
+    .banner{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(103,58,183,.22);
+      background:linear-gradient(180deg, rgba(103,58,183,.10), rgba(103,58,183,.02));
+    }
+
+    .banner .left{ display:flex; gap:12px; align-items:flex-start; }
+
+    .banner .icon{
+      width:42px; height:42px; border-radius:14px;
+      background:var(--primary);
+      color:#fff;
+      display:flex; align-items:center; justify-content:center;
+      flex:0 0 auto;
+      box-shadow:var(--shadow-sm);
+    }
+
+    .pill{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#f8fafc;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .pill.ok{ background:rgba(56,142,60,.10); border-color:rgba(56,142,60,.20); color:var(--ok); }
+    .pill.warn{ background:rgba(245,124,0,.10); border-color:rgba(245,124,0,.20); color:var(--warn); }
+    .pill.danger{ background:rgba(211,47,47,.10); border-color:rgba(211,47,47,.20); color:var(--danger); }
+    .pill.info{ background:rgba(25,118,210,.10); border-color:rgba(25,118,210,.20); color:var(--info); }
+
+    /* Inputs */
+    .toolbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-top:12px; }
+
+    .input{
+      flex:1 1 260px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+    }
+
+    .input input, .input select{
+      border:none;
+      outline:none;
+      width:100%;
+      font-family:inherit;
+      font-size:14px;
+      background:transparent;
+      color:var(--text);
+    }
+
+    /* List */
+    .list{ display:flex; flex-direction:column; gap:12px; margin-top:12px; }
+
+    .row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px;
+      border:1px solid var(--border);
+      border-radius:16px;
+      background:#fff;
+    }
+
+    .row .left{ display:flex; gap:12px; align-items:flex-start; min-width:0; }
+
+    .thumb{
+      width:56px; height:56px;
+      border-radius:16px;
+      background:#e2e8f0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#64748b;
+      flex:0 0 auto;
+      overflow:hidden;
+    }
+    .thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    .row .title{
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:560px;
+    }
+
+    .row .sub{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:4px;
+      line-height:1.35;
+      max-width:640px;
+    }
+
+    .row .actions{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; align-items:flex-start; }
+
+    .kv{
+      display:flex; flex-wrap:wrap; gap:8px;
+      margin-top:8px;
+    }
+    .kv span{
+      font-size:12px;
+      color:var(--muted);
+      background:#f8fafc;
+      border:1px solid var(--border);
+      padding:6px 10px;
+      border-radius:999px;
+    }
+    .kv b{ color:var(--text); }
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:80;
+    }
+    .modal-backdrop.show{ display:flex; }
+
+    .modal{
+      width:100%;
+      max-width:900px;
+      background:#fff;
+      border-radius:18px;
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .modal header{
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid var(--border);
+    }
+
+    .modal header .t{ font-weight:900; }
+
+    .modal .body{ padding:16px; }
+
+    .modal footer{
+      padding:14px 16px;
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      border-top:1px solid var(--border);
+      background:#fafafa;
+    }
+
+    .form-grid{ display:grid; grid-template-columns: repeat(12, 1fr); gap:12px; }
+    .field{ grid-column: span 6; display:flex; flex-direction:column; gap:6px; }
+    .field.full{ grid-column: span 12; }
+    .field label{ font-size:12px; color:var(--muted); }
+    .field input, .field select{
+      padding:12px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      outline:none;
+      font-family:inherit;
+      font-size:14px;
+    }
+
+    /* Toast */
+    .toast{
+      position:fixed;
+      right:16px;
+      bottom:16px;
+      background:#111827;
+      color:#fff;
+      padding:12px 14px;
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      display:none;
+      gap:10px;
+      align-items:flex-start;
+      max-width: 420px;
+      z-index:90;
+    }
+    .toast.show{ display:flex; }
+    .toast .material-icons{ font-size:20px; }
+
+    /* Table */
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--border);
+      border-radius:16px;
+      background:#fff;
+      margin-top:12px;
+    }
+    th, td{ text-align:left; padding:12px; border-bottom:1px solid var(--border); font-size:14px; vertical-align:top; }
+    th{ font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; background:#fafafa; }
+    tr:last-child td{ border-bottom:none; }
+
+    @media (max-width: 980px){
+      .app{ grid-template-columns: 1fr; }
+      .drawer{ display:none; }
+      .field{ grid-column: span 12; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- Drawer -->
+    <aside class="drawer">
+      <div class="brand">
+        <div class="badge"><span class="material-icons">school</span></div>
+        <div>
+          <div class="title">ISILNET</div>
+          <div class="subtitle">Estudiante | PRY147 (Demo Funcional)</div>
+        </div>
+      </div>
+
+      <div class="nav-section-label">Menú</div>
+      <nav class="nav" id="nav">
+        <div class="nav-item active" data-target="inicio"><span class="material-icons">home</span><span>Inicio</span></div>
+        <div class="nav-item" data-target="actividades"><span class="material-icons">view_list</span><span>Actividades</span></div>
+        <div class="nav-item" data-target="mis"><span class="material-icons">how_to_reg</span><span>Mis Inscripciones</span></div>
+        <div class="nav-item" data-target="certificaciones"><span class="material-icons">workspace_premium</span><span>Mis Certificaciones</span></div>
+        <div class="nav-item" data-target="perfil"><span class="material-icons">person</span><span>Mi Perfil</span></div>
+      </nav>
+
+      <div class="drawer-footer">
+        <div class="chip"><span class="material-icons" style="font-size:18px;">policy</span>Validaciones: matrícula/activo + aforo + no cruce</div>
+        <a class="link" href="index.html"><span class="material-icons">arrow_back</span>Volver al Inicio</a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="page-title" id="pageTitle">Inicio</div>
+          <div class="page-hint" id="pageHint">Inscripción y control (demo funcional)</div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="input" style="flex:0 0 320px;">
+            <span class="material-icons" style="color:#94a3b8;">badge</span>
+            <select id="studentSelect" onchange="switchStudent()"></select>
+          </div>
+
+          <button class="btn btn-primary" type="button" onclick="openPerfilModal()">
+            <span class="material-icons">assignment</span>
+            Formulario inicial
+          </button>
+
+          <button class="btn" type="button" onclick="toast('logout','Demo: cerrar sesión')">
+            <span class="material-icons">logout</span>
+            Salir
+          </button>
+        </div>
+      </header>
+
+      <section class="content">
+
+        <!-- INICIO -->
+        <div class="section active" id="section-inicio">
+          <div class="grid">
+            <div class="card" style="grid-column: span 12;">
+              <div class="banner">
+                <div class="left">
+                  <div class="icon"><span class="material-icons">event_available</span></div>
+                  <div>
+                    <div style="font-weight:900;">Actividades extracurriculares</div>
+                    <div class="muted" style="margin-top:4px; line-height:1.4;">
+                      Aquí te inscribes a <b>talleres</b>, <b>eventos</b> y <b>clubes</b>.
+                      Para talleres se valida: <b>matrícula/activo</b>, <b>aforo</b> y <b>no cruce de horario</b>.
+                      Luego podrás ver tu <b>asistencia</b> y descargar tu <b>certificado</b> cuando corresponda.
+                    </div>
+                    <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+                      <span class="pill info">Periodo vigente</span>
+                      <span class="pill">Múltiples talleres si no cruzan</span>
+                      <span class="pill warn">Certificados: reglas por definir</span>
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-primary" onclick="setActive('actividades')">
+                  <span class="material-icons">view_list</span>
+                  Ver actividades
+                </button>
+              </div>
+            </div>
+
+            <div class="card" style="grid-column: span 4;">
+              <h3>Mi estado (demo)</h3>
+              <div class="muted" style="line-height:1.7;" id="studentStatusBox">—</div>
+            </div>
+
+            <div class="card" style="grid-column: span 4;">
+              <h3>Mis inscripciones</h3>
+              <div class="muted">Total (taller/evento/club)</div>
+              <div style="margin-top:10px; font-weight:900; font-size:24px;" id="kpiMyEnroll">—</div>
+            </div>
+
+            <div class="card" style="grid-column: span 4;">
+              <h3>Asistencia registrada</h3>
+              <div class="muted">(solo talleres)</div>
+              <div style="margin-top:10px; font-weight:900; font-size:24px;" id="kpiMyAttendance">—</div>
+            </div>
+
+            <div class="card" style="grid-column: span 12;">
+              <h3>Objetivo del proyecto (PRY147)</h3>
+              <div class="sub">
+                Mejorar el control y la organización de inscripciones a actividades (talleres / eventos / clubes) porque hoy
+                muchos estudiantes se inscriben pero finalmente asisten pocos. Este módulo busca asegurar un flujo claro:
+                <b>publicación → inscripción → control (aforo / cruce / estado académico) → asistencia (talleres) → certificado</b>.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIVIDADES -->
+        <div class="section" id="section-actividades">
+          <div class="card">
+            <h3>Actividades disponibles</h3>
+            <div class="sub">Fuente: ISILMANAGER (localStorage). Si no existe, se usan datos demo. Aquí ya se muestra <b>docente</b> y <b>descripción</b>.</div>
+
+            <div class="toolbar">
+              <div class="input">
+                <span class="material-icons" style="color:#94a3b8;">search</span>
+                <input id="actSearch" type="text" placeholder="Buscar por nombre, docente o tema" oninput="renderActividades()" />
+              </div>
+              <div class="input" style="flex:0 0 220px;">
+                <span class="material-icons" style="color:#94a3b8;">tune</span>
+                <select id="actType" onchange="renderActividades()">
+                  <option value="ALL">Todos</option>
+                  <option value="TALLER">Taller</option>
+                  <option value="EVENTO">Evento</option>
+                  <option value="CLUB">Club</option>
+                </select>
+              </div>
+              <div class="input" style="flex:0 0 220px;">
+                <span class="material-icons" style="color:#94a3b8;">flag</span>
+                <select id="actEstado" onchange="renderActividades()">
+                  <option value="ALL">Todos los estados</option>
+                  <option value="PUBLICADO">Publicado</option>
+                  <option value="EN_PROCESO">En proceso</option>
+                  <option value="FINALIZADO">Finalizado</option>
+                  <option value="BORRADOR">Borrador</option>
+                  <option value="CANCELADO">Cancelado</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="list" id="actividadesList"></div>
+          </div>
+        </div>
+
+        <!-- MIS INSCRIPCIONES -->
+        <div class="section" id="section-mis">
+          <div class="card">
+            <h3>Mis inscripciones</h3>
+            <p class="sub" style="margin:0 0 10px;">
+              Revisa el estado de tu participación. En <b>talleres</b> podrás ver tu asistencia (si el docente la registró).
+            </p>
+
+            <div style="overflow:auto;">
+              <table id="myTable">
+                <thead>
+                  <tr>
+                    <th>Actividad</th>
+                    <th>Tipo</th>
+                    <th>Docente</th>
+                    <th>Horario</th>
+                    <th>Asistencia</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="myTbody"></tbody>
+              </table>
+            </div>
+
+            <div class="sub" style="margin-top:10px;">
+              <span class="pill info">Detalle</span>
+              <span class="pill info">Ver mi asistencia</span>
+              <span class="pill warn">Salir</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CERTIFICACIONES -->
+        <div class="section" id="section-certificaciones">
+          <div class="card">
+            <h3>Mis Certificaciones (histórico)</h3>
+            <div class="sub">Demo: el certificado aparece si la actividad está finalizada y el alumno cumple reglas (simulado).</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Certificado</th>
+                  <th>Actividad</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="certTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PERFIL -->
+        <div class="section" id="section-perfil">
+          <div class="card">
+            <h3>Mi Perfil</h3>
+            <div class="sub">En el sistema real, estos datos alimentan inscripción/asistencia/certificación. El DNI/Carné es clave para identificar tu asistencia.</div>
+
+            <div class="grid" style="margin-top:12px;">
+              <div class="card" style="grid-column: span 12;">
+                <div class="muted" id="perfilView">—</div>
+                <div class="toolbar" style="justify-content:flex-end;">
+                  <button class="btn btn-primary" onclick="openPerfilModal()"><span class="material-icons">edit</span>Editar perfil</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+  </div>
+
+  <!-- Modal Formulario Inicial (plantilla del admin) -->
+  <div class="modal-backdrop" id="perfilModal" onclick="closePerfilBackdrop(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <header>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="material-icons" style="color:var(--primary);">assignment</span>
+          <div>
+            <div class="t">Formulario inicial</div>
+            <div class="sub" style="margin-top:2px;">Obligatorio la primera vez • editable luego</div>
+          </div>
+        </div>
+        <button class="btn" onclick="hidePerfilModal()"><span class="material-icons">close</span></button>
+      </header>
+
+      <div class="body">
+        <div class="sub" style="margin-bottom:10px;">
+          Demo: los campos se cargan desde ISILMANAGER (localStorage). Puedes guardar y luego editar cuando quieras.
+          El DNI/Carné se puede “autollenar” por lectura (simulado).
+        </div>
+
+        <div class="form-grid" id="perfilForm"></div>
+      </div>
+
+      <footer>
+        <button class="btn" onclick="hidePerfilModal()"><span class="material-icons">close</span>Cancelar</button>
+        <button class="btn btn-primary" onclick="savePerfil()"><span class="material-icons">save</span>Guardar</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal: Detalle / Mi asistencia -->
+  <div class="modal-backdrop" id="modalBackdrop" onclick="closeModalBackdrop(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <header>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="material-icons" style="color:var(--primary);">description</span>
+          <div>
+            <div class="t" id="modalTitle">Detalle</div>
+            <div class="sub" id="modalSub">—</div>
+          </div>
+        </div>
+        <button class="btn" onclick="hideModal()"><span class="material-icons">close</span></button>
+      </header>
+
+      <div class="body" id="modalBody">—</div>
+
+      <footer>
+        <button class="btn" onclick="hideModal()"><span class="material-icons">close</span>Cerrar</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="material-icons" id="toastIcon">info</span>
+    <div>
+      <div style="font-weight:900;" id="toastTitle">Aviso</div>
+      <div style="opacity:.9; margin-top:2px; font-size:13px; line-height:1.35;" id="toastText">—</div>
+    </div>
+  </div>
+
+  <script>
+    // =============================
+    // Keys compartidas (demo integrada)
+    // =============================
+    const KEY_ACTIVIDADES = 'pry147_actividades'; // lo crea ISILMANAGER
+    const KEY_FORMFIELDS  = 'pry147_formfields';  // lo crea ISILMANAGER
+    const KEY_ASISTENCIA  = 'pry147_asistencia';  // (ideal) lo crea el docente: asistencia por actividad
+
+    const KEY_ENROLL_PREFIX  = 'pry147_enroll_';   // + studentId
+    const KEY_PROFILE_PREFIX = 'pry147_profile_';  // + studentId
+
+    // =============================
+    // Demo estudiantes (simula estado en periodo)
+    // =============================
+    const students = [
+      { id: 'S1', label: 'Ana Torres (00 - Activo)', estado: '00', activo: true,  tipo: 'REGULAR' },
+      { id: 'S2', label: 'Luis Paredes (LCUR - Activo)', estado: 'LCUR', activo: true, tipo: 'LCUR' },
+      { id: 'S3', label: 'Camila Rojas (30 - Inactivo)', estado: '30', activo: false, tipo: 'REGULAR' },
+    ];
+    let currentStudentId = 'S1';
+
+    const titles = {
+      inicio:          { title: 'Inicio',            hint: 'Inscripción y control (demo funcional)' },
+      actividades:     { title: 'Actividades',       hint: 'Taller / Evento / Club + docente + descripción + validaciones' },
+      mis:             { title: 'Mis Inscripciones', hint: 'Detalle + asistencia + gestión de mi inscripción' },
+      certificaciones: { title: 'Mis Certificaciones', hint: 'Histórico de certificados (PDF demo)' },
+      perfil:          { title: 'Mi Perfil',         hint: 'Formulario inicial editable' },
+    };
+
+    // =============================
+    // LocalStorage helpers
+    // =============================
+    function lsGet(key, fallback){
+      try{
+        const raw = localStorage.getItem(key);
+        if(!raw) return fallback;
+        return JSON.parse(raw);
+      }catch(e){
+        return fallback;
+      }
+    }
+    function lsSet(key, value){
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    // =============================
+    // Data: Actividades desde admin (o fallback)
+    // =============================
+    function getActs(){
+      const fromAdmin = lsGet(KEY_ACTIVIDADES, null);
+      if(Array.isArray(fromAdmin) && fromAdmin.length){
+        // Aseguramos que exista estructura mínima para el render (docente/descripcion/objetivos/requisitos)
+        return fromAdmin.map(a => ({
+          ...a,
+          docente: a.docente || a.docenteNombre || a.instructor || 'Por asignar',
+          descripcion: a.descripcion || a.descripcionCorta || a.detalle || '',
+          objetivos: Array.isArray(a.objetivos) ? a.objetivos : [],
+          requisitos: Array.isArray(a.requisitos) ? a.requisitos : [],
+          modalidad: a.modalidad || 'Presencial',
+          ubicacion: a.ubicacion || a.sede || '—',
+          fechas: a.fechas || '—',
+        }));
+      }
+
+      // fallback demo
+      return [
+        {
+          id:'A1', tipo:'TALLER', nombre:'Excel para gestión',
+          docente:'María Salazar', docenteFoto:'',
+          descripcion:'Aprende tablas dinámicas, validación de datos y reportes para tu vida académica y proyectos.',
+          objetivos:['Dominar funciones clave (SI, BUSCARV/XLOOKUP, SUMAR.SI.CONJUNTO)','Crear dashboards básicos para seguimiento'],
+          requisitos:['Estar matriculado y activo (00/10/20) o LCUR activo','Laptop recomendada (opcional)'],
+          modalidad:'Presencial', ubicacion:'Sede Miraflores - Aula 402',
+          fechas:'10/02/2026 al 28/02/2026',
+          horario:'Lun/Mié 18:00-19:30', cupos:30, estado:'EN_PROCESO', inscritos:15,
+        },
+        {
+          id:'A2', tipo:'TALLER', nombre:'Liderazgo y comunicación',
+          docente:'Diego Benner', docenteFoto:'',
+          descripcion:'Herramientas para hablar en público, coordinar equipos y comunicar ideas con claridad.',
+          objetivos:['Mejorar exposición y argumentación','Aplicar técnicas de feedback y comunicación asertiva'],
+          requisitos:['Estar matriculado y activo (00/10/20) o LCUR activo'],
+          modalidad:'Híbrido', ubicacion:'Sede Central / Meet',
+          fechas:'12/02/2026 al 26/02/2026',
+          horario:'Mar/Jue 18:00-19:30', cupos:30, estado:'PUBLICADO', inscritos:30,
+        },
+        {
+          id:'A3', tipo:'EVENTO', nombre:'Charla: Empleabilidad 2026',
+          docente:'Invitado RR.HH.', docenteFoto:'',
+          descripcion:'Conoce tendencias de contratación, CV efectivo, LinkedIn y cómo prepararte para entrevistas.',
+          objetivos:['Actualizar tu estrategia de empleabilidad','Entender expectativas del mercado'],
+          requisitos:['Inscripción simple'],
+          modalidad:'Presencial', ubicacion:'Auditorio Principal',
+          fechas:'15/02/2026',
+          horario:'Vie 17:00-18:00', cupos:200, estado:'FINALIZADO', inscritos:120,
+        },
+        {
+          id:'A4', tipo:'CLUB', nombre:'Club Organización Estudiantil',
+          docente:'Coordinación Estudiantil', docenteFoto:'',
+          descripcion:'Espacio para iniciativas estudiantiles, eventos internos y liderazgo comunitario.',
+          objetivos:['Participar en actividades de comunidad','Desarrollar habilidades blandas'],
+          requisitos:['Inscripción simple (sin control de asistencia)'],
+          modalidad:'Presencial', ubicacion:'Sede Central - Sala Multiuso',
+          fechas:'Todo el ciclo',
+          horario:'—', cupos:80, estado:'PUBLICADO', inscritos:15,
+        },
+      ];
+    }
+
+    // =============================
+    // Navegación
+    // =============================
+    function setActive(target){
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.target === target);
+      });
+
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      const section = document.getElementById(`section-${target}`);
+      if(section) section.classList.add('active');
+
+      const meta = titles[target] || { title: 'ISILNET Estudiante', hint: 'Demo' };
+      document.getElementById('pageTitle').textContent = meta.title;
+      document.getElementById('pageHint').textContent = meta.hint;
+
+      document.querySelector('.content').scrollTop = 0;
+
+      // renders dependientes
+      if(target === 'actividades') renderActividades();
+      if(target === 'mis') renderMy();
+      if(target === 'certificaciones') renderCertificaciones();
+      if(target === 'perfil') renderPerfilView();
+    }
+
+    document.getElementById('nav').addEventListener('click', (e) => {
+      const item = e.target.closest('.nav-item');
+      if(!item) return;
+      setActive(item.dataset.target);
+    });
+
+    // =============================
+    // Reglas de elegibilidad
+    // =============================
+    function currentStudent(){
+      return students.find(s => s.id === currentStudentId);
+    }
+
+    function isEligibleForTaller(){
+      const s = currentStudent();
+      if(!s) return false;
+      if(s.tipo === 'LCUR') return s.activo === true;
+      const okEstados = ['00','10','20'];
+      return s.activo === true && okEstados.includes(s.estado);
+    }
+
+    // =============================
+    // Horarios (demo): parsing simple
+    // =============================
+    const dayMap = {
+      'Lun':'MON','Mar':'TUE','Mié':'WED','Mie':'WED','Jue':'THU','Vie':'FRI','Sáb':'SAT','Sab':'SAT','Dom':'SUN'
+    };
+
+    function parseSchedule(text){
+      if(!text || text.trim() === '—') return null;
+      const parts = text.split(' ');
+      if(parts.length < 2) return null;
+
+      const daysPart = parts[0];
+      const timePart = parts.slice(1).join(' ');
+
+      const days = daysPart.split('/').map(d => dayMap[d.trim()] || null).filter(Boolean);
+      const [start, end] = timePart.split('-').map(x => x.trim());
+      if(!start || !end || !days.length) return null;
+
+      return { days, start, end };
+    }
+
+    function toMinutes(hhmm){
+      const [h, m] = hhmm.split(':').map(x => parseInt(x,10));
+      if(Number.isNaN(h) || Number.isNaN(m)) return null;
+      return h*60 + m;
+    }
+
+    function overlaps(a, b){
+      if(!a || !b) return false;
+      const sharedDay = a.days.some(d => b.days.includes(d));
+      if(!sharedDay) return false;
+      const aS = toMinutes(a.start), aE = toMinutes(a.end);
+      const bS = toMinutes(b.start), bE = toMinutes(b.end);
+      if(aS == null || aE == null || bS == null || bE == null) return false;
+      return aS < bE && bS < aE;
+    }
+
+    // =============================
+    // Inscripciones
+    // =============================
+    function getEnroll(){
+      return lsGet(KEY_ENROLL_PREFIX + currentStudentId, []);
+    }
+    function setEnroll(arr){
+      lsSet(KEY_ENROLL_PREFIX + currentStudentId, arr);
+    }
+
+    function enroll(activityId){
+      const acts = getActs();
+      const a = acts.find(x => x.id === activityId);
+      if(!a) return;
+
+      // Validaciones por tipo
+      if(a.tipo === 'TALLER'){
+        if(!isEligibleForTaller()){
+          toast('block', 'No puedes inscribirte: debes estar matriculado y activo en el periodo vigente (00/10/20) o ser LCUR activo.');
+          return;
+        }
+
+        // Aforo
+        const inscritos = a.inscritos || 0;
+        const cupos = a.cupos || 0;
+        if(cupos > 0 && inscritos >= cupos){
+          toast('event_busy', 'No puedes inscribirte: aforo completo.');
+          return;
+        }
+
+        // Cruce horario (contra mis talleres ya inscritos)
+        const my = getEnroll();
+        const myTallerIds = my.filter(x => x.tipo === 'TALLER').map(x => x.id);
+        const myTallerSchedules = myTallerIds
+          .map(id => acts.find(z => z.id === id))
+          .map(z => z ? parseSchedule(z.horario) : null)
+          .filter(Boolean);
+
+        const newSch = parseSchedule(a.horario);
+        const cruzado = myTallerSchedules.some(sch => overlaps(sch, newSch));
+        if(cruzado){
+          toast('schedule', 'No puedes inscribirte: existe cruce de horario con otro taller inscrito.');
+          return;
+        }
+      }
+
+      // No duplicar
+      const my = getEnroll();
+      if(my.some(x => x.id === a.id)){
+        toast('info', 'Ya estás inscrito en esta actividad.');
+        return;
+      }
+
+      // Guarda inscripción
+      my.push({ id: a.id, tipo: a.tipo, fecha: new Date().toISOString() });
+      setEnroll(my);
+
+      // Incrementa inscritos (demo)
+      a.inscritos = (a.inscritos || 0) + 1;
+
+      // Persistimos a KEY_ACTIVIDADES si existía desde admin (demo)
+      const persisted = lsGet(KEY_ACTIVIDADES, null);
+      if(Array.isArray(persisted)){
+        const idx = persisted.findIndex(x => x.id === a.id);
+        if(idx >= 0){
+          persisted[idx].inscritos = a.inscritos;
+          lsSet(KEY_ACTIVIDADES, persisted);
+        }
+      }
+
+      toast('check_circle', 'Inscripción registrada (demo).');
+      renderInicioKpis();
+      renderActividades();
+      renderMy();
+      renderCertificaciones();
+    }
+
+    function unenroll(activityId){
+      const my = getEnroll();
+      const keep = my.filter(x => x.id !== activityId);
+      if(keep.length === my.length){
+        toast('info','No estabas inscrito.');
+        return;
+      }
+      setEnroll(keep);
+
+      // Decrementa inscritos (demo)
+      const acts = getActs();
+      const a = acts.find(x => x.id === activityId);
+      if(a){
+        a.inscritos = Math.max(0, (a.inscritos || 0) - 1);
+        const persisted = lsGet(KEY_ACTIVIDADES, null);
+        if(Array.isArray(persisted)){
+          const idx = persisted.findIndex(x => x.id === a.id);
+          if(idx >= 0){
+            persisted[idx].inscritos = a.inscritos;
+            lsSet(KEY_ACTIVIDADES, persisted);
+          }
+        }
+      }
+
+      toast('delete','Te desinscribiste (demo).');
+      renderInicioKpis();
+      renderActividades();
+      renderMy();
+      renderCertificaciones();
+    }
+
+    // =============================
+    // Asistencia (demo: lectura)
+    // Estructura sugerida (localStorage: pry147_asistencia):
+    // {
+    //   "A1": { session: 1, presentDnis: ["71234567"], updatedAt: "2026-02-02T10:00:00.000Z" }
+    // }
+    // =============================
+    function getAsistenciaStore(){
+      return lsGet(KEY_ASISTENCIA, {});
+    }
+
+    function getStudentDni(){
+      const p = getProfile();
+      // compatibilidad: dni o "DNI/Carné"
+      return (p.dni || p['DNI/Carné'] || p['DNI'] || '').trim() || null;
+    }
+
+    function myAttendanceForActivity(activityId){
+      const store = getAsistenciaStore();
+      const rec = store?.[activityId];
+      if(!rec) return { status:'NO_REG', text:'Sin registro' };
+
+      const dni = getStudentDni();
+      if(!dni) return { status:'SIN_DNI', text:'Completa DNI en perfil', rec };
+
+      const present = Array.isArray(rec.presentDnis) ? rec.presentDnis.includes(dni) : null;
+      const sess = rec.session || 1;
+
+      if(present === true)  return { status:'PRESENTE', text:`Presente (Sesión ${sess})`, rec };
+      if(present === false) return { status:'AUSENTE',  text:`Ausente (Sesión ${sess})`, rec };
+
+      return { status:'NO_REG', text:'Sin registro', rec };
+    }
+
+    function pillForAttendance(att, tipo){
+      if(tipo !== 'TALLER') return '<span class="pill">No aplica</span>';
+      if(!att) return '<span class="pill">Sin registro</span>';
+      if(att.status === 'PRESENTE') return `<span class="pill ok">${att.text}</span>`;
+      if(att.status === 'AUSENTE')  return `<span class="pill warn">${att.text}</span>`;
+      if(att.status === 'SIN_DNI')  return `<span class="pill warn">${att.text}</span>`;
+      return `<span class="pill">${att.text}</span>`;
+    }
+
+    // =============================
+    // Render: Actividades (con docente + descripción)
+    // =============================
+    function iconForTipo(tipo){
+      if(tipo === 'TALLER') return 'school';
+      if(tipo === 'EVENTO') return 'event';
+      return 'diversity_3';
+    }
+
+    function pillForEstado(estado){
+      const map = {
+        BORRADOR:   '<span class="pill">Borrador</span>',
+        PUBLICADO:  '<span class="pill info">Publicado</span>',
+        EN_PROCESO: '<span class="pill ok">En proceso</span>',
+        FINALIZADO: '<span class="pill">Finalizado</span>',
+        CANCELADO:  '<span class="pill danger">Cancelado</span>',
+      };
+      return map[estado] || '<span class="pill">—</span>';
+    }
+
+    function shortText(txt, max=150){
+      const t = String(txt || '').trim();
+      if(!t) return '—';
+      return t.length > max ? (t.slice(0, max) + '…') : t;
+    }
+
+    function openDetalle(activityId){
+      const a = getActs().find(x => x.id === activityId);
+      if(!a) return;
+
+      const objetivos = (a.objetivos || []).length
+        ? `<ul>${a.objetivos.map(o => `<li>${escapeHtml(o)}</li>`).join('')}</ul>`
+        : '<div class="sub">—</div>';
+
+      const requisitos = (a.requisitos || []).length
+        ? `<ul>${a.requisitos.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>`
+        : '<div class="sub">—</div>';
+
+      const body = `
+        <div class="grid">
+          <div class="card" style="grid-column:span 12;">
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div class="thumb" style="width:72px;height:72px;">
+                ${a.imagen ? `<img src="${escapeHtml(a.imagen)}" alt="img">` : `<span class="material-icons" style="font-size:28px;">${iconForTipo(a.tipo)}</span>`}
+              </div>
+              <div style="min-width:0;">
+                <div style="font-weight:900;font-size:16px;">${escapeHtml(a.tipo)}: ${escapeHtml(a.nombre)}</div>
+                <div class="sub" style="margin-top:4px;"><b>Docente:</b> ${escapeHtml(a.docente || 'Por asignar')}</div>
+                <div class="kv">
+                  <span><b>Estado:</b> ${escapeHtml(a.estado || '—')}</span>
+                  <span><b>Modalidad:</b> ${escapeHtml(a.modalidad || '—')}</span>
+                  <span><b>Ubicación:</b> ${escapeHtml(a.ubicacion || '—')}</span>
+                  <span><b>Fechas:</b> ${escapeHtml(a.fechas || '—')}</span>
+                  <span><b>Horario:</b> ${escapeHtml(a.horario || '—')}</span>
+                  <span><b>Cupos:</b> ${(a.inscritos||0)}/${(a.cupos||0)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="grid-column:span 12;">
+            <h3 style="margin:0 0 8px;">Descripción</h3>
+            <div class="sub">${escapeHtml(a.descripcion || '—')}</div>
+          </div>
+
+          <div class="card" style="grid-column:span 6;">
+            <h3 style="margin:0 0 8px;">Objetivos</h3>
+            <div class="sub">${objetivos}</div>
+          </div>
+
+          <div class="card" style="grid-column:span 6;">
+            <h3 style="margin:0 0 8px;">Requisitos</h3>
+            <div class="sub">${requisitos}</div>
+          </div>
+        </div>
+      `;
+
+      showModal('Detalle de la actividad', `${a.tipo} • ${a.nombre}`, body);
+    }
+
+    function renderActividades(){
+      const q = (document.getElementById('actSearch')?.value || '').toLowerCase().trim();
+      const t = (document.getElementById('actType')?.value || 'ALL');
+      const st = (document.getElementById('actEstado')?.value || 'ALL');
+
+      const list = document.getElementById('actividadesList');
+      if(!list) return;
+
+      const acts = getActs();
+      const my = getEnroll();
+      const mySet = new Set(my.map(x => x.id));
+
+      const filtered = acts.filter(a => {
+        const hay = `${a.nombre} ${a.docente || ''} ${a.descripcion || ''}`.toLowerCase();
+        const matchesQ = !q || hay.includes(q);
+        const matchesT = (t === 'ALL') || (a.tipo === t);
+        const matchesS = (st === 'ALL') || (a.estado === st);
+        return matchesQ && matchesT && matchesS;
+      });
+
+      if(filtered.length === 0){
+        list.innerHTML = '<div class="sub" style="padding:10px;">No hay actividades para mostrar.</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(a => {
+        const enrolled = mySet.has(a.id);
+        const cupos = a.cupos || 0;
+        const inscritos = a.inscritos || 0;
+        const pct = cupos > 0 ? Math.min(100, Math.round((inscritos/cupos)*100)) : 0;
+
+        const btn = enrolled
+          ? `<button class="btn" onclick="unenroll('${a.id}')"><span class="material-icons">close</span>Desinscribirme</button>`
+          : `<button class="btn btn-primary" onclick="enroll('${a.id}')"><span class="material-icons">how_to_reg</span>Inscribirme</button>`;
+
+        const rules = (a.tipo === 'TALLER')
+          ? `<span class="pill">Valida: matrícula/activo</span><span class="pill">Aforo</span><span class="pill">No cruce</span>`
+          : `<span class="pill">Inscripción simple</span>`;
+
+        const thumb = a.imagen
+          ? `<img src="${escapeHtml(a.imagen)}" alt="img">`
+          : `<span class="material-icons">${iconForTipo(a.tipo)}</span>`;
+
+        return `
+          <div class="row">
+            <div class="left">
+              <div class="thumb">${thumb}</div>
+              <div style="min-width:0;">
+                <div class="title">${escapeHtml(a.tipo)}: ${escapeHtml(a.nombre)}</div>
+
+                <div class="sub">
+                  <b>Docente:</b> ${escapeHtml(a.docente || 'Por asignar')}
+                  • <b>Modalidad:</b> ${escapeHtml(a.modalidad || '—')}
+                  • <b>Ubicación:</b> ${escapeHtml(a.ubicacion || '—')}
+                </div>
+
+                <div class="sub" style="margin-top:6px;">
+                  <b>Descripción:</b> ${escapeHtml(shortText(a.descripcion, 170))}
+                </div>
+
+                <div class="sub" style="margin-top:6px;">
+                  <b>Fechas:</b> ${escapeHtml(a.fechas || '—')}
+                  • <b>Horario:</b> ${escapeHtml(a.horario || '—')}
+                  • <b>Cupos:</b> ${inscritos}/${cupos}
+                </div>
+
+                <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+                  ${pillForEstado(a.estado)}
+                  <span class="pill">Ocupación ${pct}%</span>
+                  ${rules}
+                </div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn" onclick="openDetalle('${a.id}')"><span class="material-icons">description</span>Detalle</button>
+              ${btn}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // =============================
+    // Render: Mis Inscripciones (mejorado)
+    // =============================
+    function openDetalleInscripcion(activityId){
+      openDetalle(activityId);
+    }
+
+    function openMiAsistencia(activityId){
+      const a = getActs().find(x => x.id === activityId);
+      if(!a) return;
+
+      const att = myAttendanceForActivity(activityId);
+
+      if(a.tipo !== 'TALLER'){
+        showModal('Mi asistencia', `${a.tipo} • ${a.nombre}`, `<div class="sub"><span class="pill">Esta actividad no registra asistencia.</span></div>`);
+        return;
+      }
+
+      const dni = getStudentDni();
+      const rec = att?.rec;
+      const updatedAt = rec?.updatedAt ? new Date(rec.updatedAt).toLocaleString() : '—';
+
+      const body = `
+        <div class="card" style="box-shadow:none;">
+          <div><b>Actividad:</b> ${escapeHtml(a.nombre)}</div>
+          <div><b>Docente:</b> ${escapeHtml(a.docente || 'Por asignar')}</div>
+          <div style="margin-top:10px;">${pillForAttendance(att, a.tipo)}</div>
+          <div style="margin-top:10px;"><b>Mi DNI/Carné:</b> ${escapeHtml(dni || '—')}</div>
+          <div><b>Última actualización:</b> ${escapeHtml(updatedAt)}</div>
+          <div class="sub" style="margin-top:10px;">Nota: el registro depende de que el docente haya guardado la asistencia.</div>
+        </div>
+      `;
+      showModal('Mi asistencia', `Taller • ${a.nombre}`, body);
+    }
+
+    function renderMy(){
+      const tbody = document.getElementById('myTbody');
+      if(!tbody) return;
+
+      const acts = getActs();
+      const my = getEnroll();
+
+      if(!my.length){
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="sub">Aún no tienes inscripciones. Ve a “Actividades” para inscribirte.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = my.map(e => {
+        const a = acts.find(x => x.id === e.id);
+        if(!a) return '';
+
+        const att = myAttendanceForActivity(a.id);
+
+        return `
+          <tr>
+            <td>
+              <b>${escapeHtml(a.nombre)}</b>
+              <div class="sub">Inscrito: ${new Date(e.fecha).toLocaleDateString()}</div>
+            </td>
+            <td>${escapeHtml(a.tipo)}</td>
+            <td>${escapeHtml(a.docente || 'Por asignar')}</td>
+            <td>${escapeHtml(a.horario || '—')}</td>
+            <td>${pillForAttendance(att, a.tipo)}</td>
+            <td>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn" onclick="openDetalleInscripcion('${a.id}')"><span class="material-icons">description</span>Detalle</button>
+                <button class="btn btn-primary" onclick="openMiAsistencia('${a.id}')"><span class="material-icons">fact_check</span>Mi asistencia</button>
+                <button class="btn" onclick="unenroll('${a.id}')"><span class="material-icons">close</span>Salir</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // =============================
+    // Render: Certificaciones
+    // =============================
+    function renderCertificaciones(){
+      const tbody = document.getElementById('certTable');
+      if(!tbody) return;
+
+      const acts = getActs();
+      const my = getEnroll();
+
+      if(my.length === 0){
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="sub">No hay certificaciones aún.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      const rows = my.map(e => {
+        const a = acts.find(x => x.id === e.id);
+        if(!a) return null;
+
+        // Demo: certificado solo si FINALIZADO y tipo TALLER o EVENTO
+        const eligible = (a.estado === 'FINALIZADO') && (a.tipo === 'TALLER' || a.tipo === 'EVENTO');
+        const status = eligible ? '<span class="pill ok">Disponible</span>' : '<span class="pill">No disponible</span>';
+        const action = eligible
+          ? `<button class="btn btn-primary" onclick="toast('picture_as_pdf','Demo: descarga PDF del certificado')"><span class="material-icons">download</span>Descargar</button>`
+          : `<button class="btn" onclick="toast('info','Aún no disponible: depende de reglas de asistencia/participación (por definir).')"><span class="material-icons">info</span>Ver reglas</button>`;
+
+        return `
+          <tr>
+            <td><b>Certificado de participación</b></td>
+            <td>${escapeHtml(a.nombre)}</td>
+            <td>${status}</td>
+            <td>${action}</td>
+          </tr>
+        `;
+      }).filter(Boolean);
+
+      tbody.innerHTML = rows.length ? rows.join('') : `
+        <tr>
+          <td colspan="4" class="sub">No hay certificaciones aún.</td>
+        </tr>
+      `;
+    }
+
+    // =============================
+    // Perfil (Formulario inicial)
+    // =============================
+    function getFormFields(){
+      const fromAdmin = lsGet(KEY_FORMFIELDS, null);
+      if(Array.isArray(fromAdmin) && fromAdmin.length) return fromAdmin;
+
+      // fallback demo
+      return [
+        { id:'F1', campo:'DNI/Carné', key:'dni', tipo:'texto', obligatorio:true },
+        { id:'F2', campo:'Nombres', key:'nombres', tipo:'texto', obligatorio:true },
+        { id:'F3', campo:'Apellidos', key:'apellidos', tipo:'texto', obligatorio:true },
+        { id:'F4', campo:'Correo', key:'correo', tipo:'email', obligatorio:true },
+        { id:'F5', campo:'Celular', key:'celular', tipo:'texto', obligatorio:false },
+        { id:'F6', campo:'Carrera', key:'carrera', tipo:'lista', obligatorio:true },
+      ];
+    }
+
+    function getProfile(){
+      return lsGet(KEY_PROFILE_PREFIX + currentStudentId, {});
+    }
+    function setProfile(obj){
+      lsSet(KEY_PROFILE_PREFIX + currentStudentId, obj);
+    }
+
+    function openPerfilModal(){
+      buildPerfilForm();
+      document.getElementById('perfilModal').classList.add('show');
+    }
+    function hidePerfilModal(){
+      document.getElementById('perfilModal').classList.remove('show');
+    }
+    function closePerfilBackdrop(e){
+      if(e.target.id === 'perfilModal') hidePerfilModal();
+    }
+
+    function buildPerfilForm(){
+      const fields = getFormFields();
+      const profile = getProfile();
+      const container = document.getElementById('perfilForm');
+      container.innerHTML = '';
+
+      fields.forEach(f => {
+        const labelTxt = f.campo;
+        const key = f.key || f.campo; // compatibilidad si viene del admin
+        const val = (profile[key] ?? profile[labelTxt] ?? '');
+
+        const div = document.createElement('div');
+        div.className = 'field';
+        if(String(key).toLowerCase().includes('correo')) div.classList.add('full');
+
+        const label = document.createElement('label');
+        label.textContent = f.obligatorio ? `${labelTxt} *` : labelTxt;
+
+        let input;
+        if(f.tipo === 'lista'){
+          input = document.createElement('select');
+          ['— Seleccionar —','Administración','Sistemas','Diseño','Marketing','Otro'].forEach((opt, idx) => {
+            const o = document.createElement('option');
+            o.value = idx === 0 ? '' : opt;
+            o.textContent = opt;
+            if(opt === val) o.selected = true;
+            input.appendChild(o);
+          });
+        } else {
+          input = document.createElement('input');
+          input.type = (f.tipo === 'email') ? 'email' : 'text';
+          input.placeholder = labelTxt;
+          input.value = val;
+        }
+
+        input.dataset.key = key;
+        input.dataset.label = labelTxt;
+        input.dataset.required = f.obligatorio ? '1' : '0';
+
+        div.appendChild(label);
+        div.appendChild(input);
+        container.appendChild(div);
+      });
+
+      // Simulación: autollenado de DNI/Carné si está vacío
+      const dniEl = Array.from(container.querySelectorAll('input,select'))
+        .find(el => (el.dataset.key || '').toLowerCase().includes('dni') || (el.dataset.label || '').toLowerCase().includes('dni'));
+      if(dniEl && !dniEl.value){
+        dniEl.value = currentStudentId === 'S1' ? '71234567' : (currentStudentId === 'S2' ? 'CARNET-00123' : '');
+      }
+    }
+
+    function savePerfil(){
+      const container = document.getElementById('perfilForm');
+      const inputs = Array.from(container.querySelectorAll('input,select'));
+
+      const data = { ...getProfile() };
+
+      for(const el of inputs){
+        const key = el.dataset.key;
+        const label = el.dataset.label;
+        const required = el.dataset.required === '1';
+        const val = (el.value || '').trim();
+
+        if(required && !val){
+          toast('warning', `Completa el campo obligatorio: ${label}`);
+          return;
+        }
+
+        // Guardamos por key (normalizado) y además por label si quieres compatibilidad
+        data[key] = val;
+        if(label && !(label in data)) data[label] = val; // opcional: compatibilidad
+      }
+
+      setProfile(data);
+      toast('check_circle','Perfil guardado (demo).');
+      hidePerfilModal();
+      renderPerfilView();
+      renderInicioKpis();
+      renderMy();
+    }
+
+    function renderPerfilView(){
+      const p = getProfile();
+      const s = currentStudent();
+      const box = document.getElementById('perfilView');
+
+      const showPairs = [
+        ['DNI/Carné','dni'],
+        ['Nombres','nombres'],
+        ['Apellidos','apellidos'],
+        ['Correo','correo'],
+        ['Celular','celular'],
+        ['Carrera','carrera'],
+      ];
+
+      const items = showPairs
+        .map(([label, key]) => {
+          const v = (p[key] ?? p[label] ?? '').toString().trim();
+          if(!v) return null;
+          return `<div style="margin:4px 0;"><b>${escapeHtml(label)}:</b> ${escapeHtml(v)}</div>`;
+        })
+        .filter(Boolean);
+
+      box.innerHTML = `
+        <div style="line-height:1.7;">
+          <div><b>Estudiante:</b> ${escapeHtml(s.label)}</div>
+          <div><b>ID:</b> ${escapeHtml(s.id)}</div>
+          <div style="margin-top:10px; font-weight:900;">Datos registrados</div>
+          ${items.length ? items.join('') : '<div class="sub">Aún no completaste el formulario inicial.</div>'}
+        </div>
+      `;
+    }
+
+    // =============================
+    // KPI + Estado en Inicio
+    // =============================
+    function renderInicioKpis(){
+      const s = currentStudent();
+      const ok = isEligibleForTaller();
+      const box = document.getElementById('studentStatusBox');
+      box.innerHTML = `
+        <div><b>Estudiante:</b> ${escapeHtml(s.label)}</div>
+        <div><b>Tipo:</b> ${escapeHtml(s.tipo)}</div>
+        <div><b>Estado académico:</b> ${escapeHtml(s.estado)}</div>
+        <div><b>Activo:</b> ${s.activo ? 'Sí' : 'No'}</div>
+        <div style="margin-top:10px;">${ok ? '<span class="pill ok">Puede inscribirse a talleres</span>' : '<span class="pill warn">No puede inscribirse a talleres</span>'}</div>
+      `;
+
+      const my = getEnroll();
+      document.getElementById('kpiMyEnroll').textContent = my.length;
+
+      // asistencia: cuenta presentes en talleres
+      const presentCount = my
+        .filter(x => x.tipo === 'TALLER')
+        .map(x => myAttendanceForActivity(x.id))
+        .filter(x => x && x.status === 'PRESENTE').length;
+
+      const totalTaller = my.filter(x => x.tipo === 'TALLER').length;
+      document.getElementById('kpiMyAttendance').textContent = totalTaller ? `${presentCount}/${totalTaller}` : '—';
+    }
+
+    // =============================
+    // Student switch
+    // =============================
+    function initStudents(){
+      const sel = document.getElementById('studentSelect');
+      sel.innerHTML = students.map(s => `<option value="${s.id}">${escapeHtml(s.label)}</option>`).join('');
+      sel.value = currentStudentId;
+    }
+
+    function switchStudent(){
+      currentStudentId = document.getElementById('studentSelect').value;
+      toast('person', 'Cambiando estudiante (demo).');
+
+      renderInicioKpis();
+      renderActividades();
+      renderMy();
+      renderCertificaciones();
+      renderPerfilView();
+    }
+
+    // =============================
+    // Modal helpers
+    // =============================
+    function showModal(title, sub, htmlBody){
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalSub').textContent = sub;
+      document.getElementById('modalBody').innerHTML = htmlBody;
+      document.getElementById('modalBackdrop').classList.add('show');
+    }
+    function hideModal(){
+      document.getElementById('modalBackdrop').classList.remove('show');
+    }
+    function closeModalBackdrop(e){
+      if(e.target.id === 'modalBackdrop') hideModal();
+    }
+
+    // =============================
+    // Toast
+    // =============================
+    function toast(icon, text){
+      const t = document.getElementById('toast');
+      document.getElementById('toastIcon').textContent = icon;
+      document.getElementById('toastTitle').textContent = 'Aviso';
+      document.getElementById('toastText').textContent = text;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3600);
+    }
+
+    // =============================
+    // Escape
+    // =============================
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    // =============================
+    // Init
+    // =============================
+    initStudents();
+    renderInicioKpis();
+    renderActividades();
+    renderMy();
+    renderCertificaciones();
+    renderPerfilView();
+
+    // auto-tip si perfil vacío
+    const prof = getProfile();
+    if(!prof || Object.keys(prof).length === 0){
+      setTimeout(() => toast('assignment', 'Tip: completa el Formulario inicial (obligatorio la primera vez).'), 700);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISILNET Docente | PRY147 (Demo Funcional)</title>
+
+  <!-- Fuente estilo Vuetify -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    :root{
+      --primary:#673ab7;
+      --bg:#f5f7fa;
+      --surface:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --shadow:0 8px 24px rgba(0,0,0,.10);
+      --shadow-sm:0 4px 12px rgba(0,0,0,.08);
+      --radius:14px;
+      --ok:#2e7d32;
+      --warn:#ef6c00;
+      --danger:#d32f2f;
+      --info:#1976d2;
+    }
+
+    *{box-sizing:border-box;}
+    body{ margin:0; font-family:'Roboto',sans-serif; color:var(--text); background:var(--bg); }
+
+    .app{ display:grid; grid-template-columns:280px 1fr; height:100vh; overflow:hidden; }
+
+    /* Drawer */
+    .drawer{
+      background:var(--surface);
+      border-right:1px solid var(--border);
+      padding:18px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      padding:12px 10px; border-radius:12px;
+      background:linear-gradient(180deg, rgba(103,58,183,.10), rgba(103,58,183,.02));
+    }
+
+    .brand .badge{
+      width:38px; height:38px; border-radius:12px;
+      background:var(--primary); color:#fff;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:var(--shadow-sm);
+      flex:0 0 auto;
+    }
+
+    .brand .title{ font-weight:900; letter-spacing:.2px; }
+    .brand .subtitle{ font-size:12px; color:var(--muted); margin-top:2px; }
+
+    .nav-section-label{
+      font-size:12px; color:var(--muted);
+      padding:10px 10px 6px;
+      text-transform:uppercase; letter-spacing:.08em;
+    }
+
+    .nav{ display:flex; flex-direction:column; gap:6px; padding:6px; }
+
+    .nav-item{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 10px; border-radius:12px;
+      cursor:pointer; user-select:none;
+      transition:.15s ease;
+    }
+    .nav-item:hover{ background:#f1f5f9; }
+    .nav-item.active{ background:rgba(103,58,183,.12); color:var(--primary); }
+    .nav-item .material-icons{ font-size:20px; }
+
+    .drawer-footer{
+      margin-top:auto;
+      padding:10px;
+      border-top:1px solid var(--border);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:#f8fafc;
+      border:1px solid var(--border);
+      color:var(--muted);
+      font-size:12px;
+      width:fit-content;
+    }
+
+    .link{
+      display:inline-flex; align-items:center; gap:8px;
+      text-decoration:none;
+      color:var(--primary);
+      font-weight:700;
+      padding:8px 10px;
+      border-radius:10px;
+      transition:.15s ease;
+    }
+    .link:hover{ background:rgba(103,58,183,.10); }
+
+    /* Main */
+    .main{ display:flex; flex-direction:column; overflow:hidden; }
+
+    .topbar{
+      height:64px;
+      background:var(--surface);
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 18px;
+      gap:12px;
+    }
+
+    .page-title{ font-weight:900; letter-spacing:.2px; }
+    .page-hint{ font-size:12px; color:var(--muted); margin-top:2px; }
+
+    .topbar-right{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid var(--border);
+      background:#fff; color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      transition:.15s ease;
+      font-weight:800;
+      font-size:13px;
+      white-space:nowrap;
+    }
+    .btn:hover{ box-shadow:var(--shadow-sm); transform:translateY(-1px); }
+    .btn-primary{ border-color:rgba(103,58,183,.25); background:rgba(103,58,183,.10); color:var(--primary); }
+    .btn-danger{ border-color:rgba(211,47,47,.25); background:rgba(211,47,47,.08); color:var(--danger); }
+
+    .content{ padding:18px; overflow:auto; }
+
+    .grid{ display:grid; grid-template-columns: repeat(12, 1fr); gap:14px; }
+
+    .card{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow-sm);
+      padding:16px;
+    }
+
+    .card h3{ margin:0 0 10px; font-size:16px; }
+    .muted{ color:var(--muted); }
+
+    .section{ display:none; }
+    .section.active{ display:block; }
+
+    .input{
+      flex:1 1 260px;
+      display:flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+    }
+
+    .input input, .input select{
+      border:none; outline:none; width:100%;
+      font-family:inherit; font-size:14px;
+      background:transparent; color:var(--text);
+    }
+
+    .pill{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#f8fafc;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .pill.ok{ background:rgba(56,142,60,.10); border-color:rgba(56,142,60,.20); color:var(--ok); }
+    .pill.warn{ background:rgba(245,124,0,.10); border-color:rgba(245,124,0,.20); color:var(--warn); }
+    .pill.danger{ background:rgba(211,47,47,.10); border-color:rgba(211,47,47,.20); color:var(--danger); }
+    .pill.info{ background:rgba(25,118,210,.10); border-color:rgba(25,118,210,.20); color:var(--info); }
+
+    .toolbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-top:12px; }
+
+    .list{ display:flex; flex-direction:column; gap:12px; margin-top:12px; }
+
+    .row{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px; padding:12px;
+      border:1px solid var(--border);
+      border-radius:16px;
+      background:#fff;
+    }
+
+    .row .left{ display:flex; gap:12px; align-items:flex-start; min-width:0; }
+
+    .thumb{
+      width:56px; height:56px; border-radius:16px;
+      background:#e2e8f0; color:#64748b;
+      display:flex; align-items:center; justify-content:center;
+      flex:0 0 auto;
+    }
+
+    .row .title{
+      font-weight:900;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      max-width:560px;
+    }
+
+    .row .sub{ font-size:12px; color:var(--muted); margin-top:4px; line-height:1.35; max-width:560px; }
+
+    .row .actions{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; align-items:center; }
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      border:1px solid var(--border);
+      border-radius:16px;
+      background:#fff;
+      overflow:hidden;
+      margin-top:12px;
+    }
+
+    th, td{ text-align:left; padding:12px; border-bottom:1px solid var(--border); font-size:14px; }
+    th{ font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
+    tr:last-child td{ border-bottom:none; }
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed; inset:0;
+      background:rgba(15,23,42,.45);
+      display:none; align-items:center; justify-content:center;
+      padding:16px; z-index:50;
+    }
+    .modal-backdrop.show{ display:flex; }
+    .modal{
+      width:100%; max-width:980px;
+      background:#fff;
+      border-radius:18px;
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .modal header{
+      padding:14px 16px;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid var(--border);
+    }
+    .modal header .t{ font-weight:900; }
+    .modal .body{ padding:16px; }
+    .modal footer{
+      padding:14px 16px;
+      display:flex; gap:10px; justify-content:flex-end;
+      border-top:1px solid var(--border);
+      background:#fafafa;
+    }
+
+    .toast{
+      position:fixed; right:16px; bottom:16px;
+      background:#111827; color:#fff;
+      padding:12px 14px;
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      display:none; gap:10px; align-items:flex-start;
+      max-width:420px; z-index:60;
+    }
+    .toast.show{ display:flex; }
+    .toast .material-icons{ font-size:20px; }
+
+    @media (max-width: 980px){
+      .app{ grid-template-columns: 1fr; }
+      .drawer{ display:none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- Drawer -->
+    <aside class="drawer">
+      <div class="brand">
+        <div class="badge"><span class="material-icons">co_present</span></div>
+        <div>
+          <div class="title">ISILNET</div>
+          <div class="subtitle">Docente | PRY147 (Demo Funcional)</div>
+        </div>
+      </div>
+
+      <div class="nav-section-label">Menú</div>
+      <nav class="nav" id="nav">
+        <div class="nav-item active" data-target="talleres"><span class="material-icons">view_list</span><span>Mis talleres</span></div>
+        <div class="nav-item" data-target="asistencia"><span class="material-icons">fact_check</span><span>Registrar asistencia</span></div>
+        <div class="nav-item" data-target="reportes"><span class="material-icons">analytics</span><span>Reportes</span></div>
+      </nav>
+
+      <div class="drawer-footer">
+        <div class="chip"><span class="material-icons" style="font-size:18px;">sync</span>Guarda asistencia en localStorage</div>
+        <a class="link" href="index.html"><span class="material-icons">arrow_back</span>Volver al Inicio</a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="page-title" id="pageTitle">Mis talleres</div>
+          <div class="page-hint" id="pageHint">Visualiza talleres asignados y su estado</div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="input" style="flex:0 0 320px;">
+            <span class="material-icons" style="color:#94a3b8;">person</span>
+            <select id="teacherSelect" onchange="switchTeacher()"></select>
+          </div>
+          <button class="btn" onclick="toast('sync','Demo: datos compartidos con Alumno/Manager por localStorage')">
+            <span class="material-icons">info</span>Info
+          </button>
+        </div>
+      </header>
+
+      <section class="content">
+
+        <!-- MIS TALLERES -->
+        <div class="section active" id="section-talleres">
+          <div class="card">
+            <h3>Talleres asignados</h3>
+            <div class="muted">Fuente: ISILMANAGER (localStorage). Si no hay asignación, se muestran datos demo.</div>
+
+            <div class="toolbar">
+              <div class="input">
+                <span class="material-icons" style="color:#94a3b8;">search</span>
+                <input id="tSearch" type="text" placeholder="Buscar taller" oninput="renderTalleres()" />
+              </div>
+              <div class="input" style="flex:0 0 220px;">
+                <span class="material-icons" style="color:#94a3b8;">filter_alt</span>
+                <select id="tEstado" onchange="renderTalleres()">
+                  <option value="ALL">Todos</option>
+                  <option value="PUBLICADO">No iniciado</option>
+                  <option value="EN_PROCESO">En proceso</option>
+                  <option value="FINALIZADO">Finalizado</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="list" id="talleresList"></div>
+          </div>
+        </div>
+
+        <!-- ASISTENCIA -->
+        <div class="section" id="section-asistencia">
+          <div class="card">
+            <h3>Registrar asistencia</h3>
+            <div class="muted">Selecciona un taller y marca presentes. Se guarda en <b>pry147_asistencia</b> para que el alumno lo vea.</div>
+
+            <div class="toolbar">
+              <div class="input" style="flex:0 0 340px;">
+                <span class="material-icons" style="color:#94a3b8;">school</span>
+                <select id="tallerSelect" onchange="loadTallerForAttendance()"></select>
+              </div>
+              <div class="input" style="flex:0 0 180px;">
+                <span class="material-icons" style="color:#94a3b8;">repeat</span>
+                <select id="sessionSelect" onchange="loadTallerForAttendance()">
+                  <option value="1">Sesión 1</option>
+                  <option value="2">Sesión 2</option>
+                  <option value="3">Sesión 3</option>
+                </select>
+              </div>
+              <button class="btn" onclick="markAll(true)"><span class="material-icons">done_all</span>Marcar todos presentes</button>
+              <button class="btn" onclick="markAll(false)"><span class="material-icons">remove_done</span>Marcar todos ausentes</button>
+              <button class="btn btn-primary" onclick="saveAttendance()"><span class="material-icons">save</span>Guardar asistencia</button>
+            </div>
+
+            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;" id="attendanceMeta"></div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Presente</th>
+                  <th>Alumno</th>
+                  <th>DNI/Carné (demo)</th>
+                  <th>Observación</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- REPORTES -->
+        <div class="section" id="section-reportes">
+          <div class="card">
+            <h3>Reportes del docente</h3>
+            <div class="muted">Resumen por taller: inscritos vs presentes (por sesión). Esto alimenta monitoreo en ISILMANAGER.</div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Taller</th>
+                  <th>Estado</th>
+                  <th>Inscritos</th>
+                  <th>Sesión</th>
+                  <th>Presentes</th>
+                  <th>%</th>
+                </tr>
+              </thead>
+              <tbody id="reportTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal confirmar limpieza -->
+  <div class="modal-backdrop" id="confirmModal" onclick="closeModalBackdrop(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <header>
+        <div class="t" id="confirmTitle">Confirmar</div>
+        <button class="btn" onclick="hideConfirm()"><span class="material-icons">close</span></button>
+      </header>
+      <div class="body">
+        <div id="confirmText" class="muted" style="line-height:1.6;">—</div>
+      </div>
+      <footer>
+        <button class="btn" onclick="hideConfirm()">Cancelar</button>
+        <button class="btn btn-danger" id="confirmOk">Eliminar</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="material-icons" id="toastIcon">info</span>
+    <div>
+      <div style="font-weight:900;" id="toastTitle">Aviso</div>
+      <div style="opacity:.9; margin-top:2px; font-size:13px; line-height:1.35;" id="toastText">—</div>
+    </div>
+  </div>
+
+  <script>
+    // -----------------------------
+    // Keys compartidas
+    // -----------------------------
+    const KEY_ACTIVIDADES = 'pry147_actividades';
+    const KEY_DOCENTES    = 'pry147_docentes';
+    const KEY_ASISTENCIA  = 'pry147_asistencia';
+    const KEY_ENROLL_PREFIX  = 'pry147_enroll_';
+    const KEY_PROFILE_PREFIX = 'pry147_profile_';
+
+    // -----------------------------
+    // Docentes (desde admin o demo)
+    // -----------------------------
+    const demoTeachers = [
+      { id:'D1', nombre:'María', apellidos:'Salazar', estado:'ACTIVO', foto:'' },
+      { id:'D2', nombre:'Carlos', apellidos:'Ramos', estado:'ACTIVO', foto:'' },
+      { id:'D3', nombre:'Paola', apellidos:'Vega', estado:'INACTIVO', foto:'' },
+    ];
+
+    let currentTeacherId = 'D1';
+
+    const titles = {
+      talleres: { title: 'Mis talleres', hint: 'Visualiza talleres asignados y su estado' },
+      asistencia: { title: 'Registrar asistencia', hint: 'Marca presentes y guarda para Alumno/Manager' },
+      reportes: { title: 'Reportes', hint: 'Resumen de participación por sesión' },
+    };
+
+    // -----------------------------
+    // localStorage utils
+    // -----------------------------
+    function lsGet(key, fallback){
+      try{
+        const raw = localStorage.getItem(key);
+        if(!raw) return fallback;
+        return JSON.parse(raw);
+      }catch(e){ return fallback; }
+    }
+    function lsSet(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
+
+    // -----------------------------
+    // Data: docentes
+    // -----------------------------
+    function getTeachers(){
+      const fromAdmin = lsGet(KEY_DOCENTES, null);
+      if(Array.isArray(fromAdmin) && fromAdmin.length) return fromAdmin;
+      return demoTeachers;
+    }
+
+    // -----------------------------
+    // Data: actividades
+    // Estructura esperada (demo):
+    // {id,tipo,nombre,horario,cupos,estado,docenteId?,docente?,inscritos?,asistentes?}
+    // -----------------------------
+    function getActividades(){
+      const fromAdmin = lsGet(KEY_ACTIVIDADES, null);
+      if(Array.isArray(fromAdmin) && fromAdmin.length) return fromAdmin;
+      // fallback
+      return [
+        { id:'A1', tipo:'TALLER', nombre:'Excel para gestión', horario:'Lun/Mié 18:00-19:30', cupos:30, estado:'EN_PROCESO', docenteId:'D1', inscritos:15, asistentes:10 },
+        { id:'A2', tipo:'TALLER', nombre:'Liderazgo y comunicación', horario:'Mar/Jue 18:00-19:30', cupos:30, estado:'PUBLICADO', docenteId:'D1', inscritos:30, asistentes:0 },
+        { id:'A5', tipo:'TALLER', nombre:'Power BI básico', horario:'Vie 18:00-19:30', cupos:25, estado:'PUBLICADO', docenteId:'D2', inscritos:12, asistentes:0 },
+      ];
+    }
+
+    function saveActividades(arr){ lsSet(KEY_ACTIVIDADES, arr); }
+
+    // -----------------------------
+    // Navegación
+    // -----------------------------
+    function setActive(target){
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.target === target);
+      });
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      const section = document.getElementById(`section-${target}`);
+      if(section) section.classList.add('active');
+
+      const meta = titles[target] || { title:'ISILNET Docente', hint:'Demo' };
+      document.getElementById('pageTitle').textContent = meta.title;
+      document.getElementById('pageHint').textContent = meta.hint;
+
+      document.querySelector('.content').scrollTop = 0;
+
+      if(target === 'talleres') renderTalleres();
+      if(target === 'asistencia') initAttendanceUI();
+      if(target === 'reportes') renderReportes();
+    }
+
+    document.getElementById('nav').addEventListener('click', (e) => {
+      const item = e.target.closest('.nav-item');
+      if(!item) return;
+      setActive(item.dataset.target);
+    });
+
+    // -----------------------------
+    // Helpers UI
+    // -----------------------------
+    function pillForEstado(estado){
+      const map = {
+        BORRADOR: '<span class="pill">Borrador</span>',
+        PUBLICADO: '<span class="pill info">No iniciado</span>',
+        EN_PROCESO: '<span class="pill ok">En proceso</span>',
+        FINALIZADO: '<span class="pill">Finalizado</span>',
+        CANCELADO: '<span class="pill danger">Cancelado</span>',
+      };
+      return map[estado] || '<span class="pill">—</span>';
+    }
+
+    function toast(icon, text){
+      const t = document.getElementById('toast');
+      document.getElementById('toastIcon').textContent = icon;
+      document.getElementById('toastTitle').textContent = 'Aviso';
+      document.getElementById('toastText').textContent = text;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3600);
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    // -----------------------------
+    // Teacher switch
+    // -----------------------------
+    function initTeachers(){
+      const teachers = getTeachers();
+      const sel = document.getElementById('teacherSelect');
+      sel.innerHTML = teachers.map(t => {
+        const label = `${t.nombre || ''} ${t.apellidos || ''}`.trim() || t.id;
+        const status = (t.estado === 'INACTIVO') ? ' (Inactivo)' : '';
+        return `<option value="${t.id}">${escapeHtml(label + status)}</option>`;
+      }).join('');
+
+      // primer activo
+      const firstActive = teachers.find(t => t.estado !== 'INACTIVO');
+      currentTeacherId = firstActive?.id || teachers[0]?.id || 'D1';
+      sel.value = currentTeacherId;
+    }
+
+    function switchTeacher(){
+      currentTeacherId = document.getElementById('teacherSelect').value;
+      toast('person','Cambiando docente (demo).');
+      renderTalleres();
+      initAttendanceUI();
+      renderReportes();
+    }
+
+    // -----------------------------
+    // Mis talleres
+    // -----------------------------
+    function teacherTalleres(){
+      const acts = getActividades();
+      return acts.filter(a => a.tipo === 'TALLER' && (a.docenteId === currentTeacherId || a.docente === currentTeacherId));
+    }
+
+    function renderTalleres(){
+      const q = (document.getElementById('tSearch')?.value || '').toLowerCase().trim();
+      const est = (document.getElementById('tEstado')?.value || 'ALL');
+
+      const list = document.getElementById('talleresList');
+      if(!list) return;
+
+      const talleres = teacherTalleres().filter(t => {
+        const matchQ = !q || String(t.nombre).toLowerCase().includes(q);
+        const matchE = (est === 'ALL') || (t.estado === est);
+        return matchQ && matchE;
+      });
+
+      if(talleres.length === 0){
+        list.innerHTML = '<div class="muted" style="padding:10px;">No tienes talleres asignados (o no hay data en ISILMANAGER).</div>';
+        return;
+      }
+
+      list.innerHTML = talleres.map(t => {
+        const cupos = t.cupos || 0;
+        const inscritos = t.inscritos || 0;
+        const pct = cupos > 0 ? Math.min(100, Math.round((inscritos/cupos)*100)) : 0;
+
+        const canTakeAttendance = (t.estado === 'EN_PROCESO' || t.estado === 'FINALIZADO');
+
+        return `
+          <div class="row">
+            <div class="left">
+              <div class="thumb"><span class="material-icons">school</span></div>
+              <div style="min-width:0;">
+                <div class="title">${escapeHtml(t.nombre)}</div>
+                <div class="sub"><b>Horario:</b> ${escapeHtml(t.horario || '—')} • <b>Cupos:</b> ${inscritos}/${cupos} • <b>Ocupación:</b> ${pct}%</div>
+                <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+                  ${pillForEstado(t.estado)}
+                  <span class="pill">ID: ${escapeHtml(t.id)}</span>
+                </div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn" onclick="cycleEstado('${t.id}')"><span class="material-icons">autorenew</span>Cambiar estado</button>
+              <button class="btn btn-primary" onclick="goAttendance('${t.id}')" ${canTakeAttendance ? '' : ''}>
+                <span class="material-icons">fact_check</span>Asistencia
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function cycleEstado(id){
+      const acts = getActividades();
+      const idx = acts.findIndex(a => a.id === id);
+      if(idx < 0) return;
+
+      const order = ['PUBLICADO','EN_PROCESO','FINALIZADO'];
+      const cur = acts[idx].estado || 'PUBLICADO';
+      const pos = order.indexOf(cur);
+      const next = order[(pos + 1) % order.length];
+      acts[idx].estado = next;
+      saveActividades(acts);
+      toast('autorenew', `Estado actualizado a: ${next}`);
+      renderTalleres();
+      renderReportes();
+    }
+
+    function goAttendance(tallerId){
+      setActive('asistencia');
+      const sel = document.getElementById('tallerSelect');
+      sel.value = tallerId;
+      loadTallerForAttendance();
+    }
+
+    // -----------------------------
+    // Enrollments: leer alumnos inscritos desde localStorage
+    // Estructura en alumno: KEY_ENROLL_PREFIX + studentId -> [{id,tipo,fecha}]
+    // -----------------------------
+    function getEnrolledStudents(activityId){
+      const students = [];
+      for(let i=0; i<localStorage.length; i++){
+        const key = localStorage.key(i);
+        if(!key || !key.startsWith(KEY_ENROLL_PREFIX)) continue;
+        const studentId = key.substring(KEY_ENROLL_PREFIX.length);
+        const arr = lsGet(key, []);
+        if(Array.isArray(arr) && arr.some(e => e.id === activityId)){
+          const profile = lsGet(KEY_PROFILE_PREFIX + studentId, {});
+          const dni = profile['DNI/Carné'] || profile['DNI'] || '';
+          const nombres = profile['Nombres'] || '';
+          const apellidos = profile['Apellidos'] || '';
+          const correo = profile['Correo'] || '';
+          const label = `${nombres} ${apellidos}`.trim() || studentId;
+          students.push({ studentId, label, dni, correo });
+        }
+      }
+      // orden por nombre
+      students.sort((a,b) => (a.label||'').localeCompare((b.label||'')));
+      return students;
+    }
+
+    // -----------------------------
+    // Asistencia store
+    // Estructura:
+    // {
+    //   [activityId]: {
+    //     [session]: {
+    //       presentDnis: [],
+    //       presentStudentIds: [],
+    //       total: number,
+    //       docenteId: 'Dx',
+    //       updatedAt: 'ISO'
+    //     }
+    //   }
+    // }
+    // -----------------------------
+    function getAttendanceStore(){
+      return lsGet(KEY_ASISTENCIA, {});
+    }
+    function setAttendanceStore(obj){
+      lsSet(KEY_ASISTENCIA, obj);
+    }
+
+    function initAttendanceUI(){
+      const sel = document.getElementById('tallerSelect');
+      const talleres = teacherTalleres();
+
+      if(!talleres.length){
+        sel.innerHTML = '<option value="">(Sin talleres asignados)</option>';
+        document.getElementById('attendanceTable').innerHTML = '<tr><td colspan="4" class="muted">No hay talleres para registrar asistencia.</td></tr>';
+        document.getElementById('attendanceMeta').innerHTML = '';
+        return;
+      }
+
+      sel.innerHTML = talleres.map(t => `<option value="${t.id}">${escapeHtml(t.nombre)}</option>`).join('');
+      if(!sel.value) sel.value = talleres[0].id;
+      loadTallerForAttendance();
+    }
+
+    function loadTallerForAttendance(){
+      const activityId = document.getElementById('tallerSelect').value;
+      const session = document.getElementById('sessionSelect').value;
+
+      const acts = getActividades();
+      const a = acts.find(x => x.id === activityId);
+      const meta = document.getElementById('attendanceMeta');
+      const tbody = document.getElementById('attendanceTable');
+
+      if(!a){
+        meta.innerHTML = '';
+        tbody.innerHTML = '<tr><td colspan="4" class="muted">Selecciona un taller válido.</td></tr>';
+        return;
+      }
+
+      const enrolled = getEnrolledStudents(activityId);
+      const store = getAttendanceStore();
+      const saved = store?.[activityId]?.[session] || null;
+
+      const presentDnis = new Set(saved?.presentDnis || []);
+      const presentIds  = new Set(saved?.presentStudentIds || []);
+
+      const missingDni = enrolled.filter(s => !String(s.dni||'').trim()).length;
+
+      meta.innerHTML = `
+        <span class="pill info">Taller: ${escapeHtml(a.nombre)}</span>
+        <span class="pill">Horario: ${escapeHtml(a.horario || '—')}</span>
+        <span class="pill">Sesión: ${escapeHtml(session)}</span>
+        <span class="pill">Inscritos detectados: ${enrolled.length}</span>
+        ${missingDni ? `<span class="pill warn">${missingDni} sin DNI/Carné (depende del perfil)</span>` : '<span class="pill ok">Perfiles completos</span>'}
+        ${saved?.updatedAt ? `<span class="pill">Última actualización: ${escapeHtml(new Date(saved.updatedAt).toLocaleString())}</span>` : '<span class="pill">Sin registro previo</span>'}
+      `;
+
+      if(enrolled.length === 0){
+        tbody.innerHTML = '<tr><td colspan="4" class="muted">No se detectan alumnos inscritos (en la demo se detecta por localStorage).</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = enrolled.map(s => {
+        const checked = (s.dni && presentDnis.has(s.dni)) || presentIds.has(s.studentId);
+        const obs = !s.dni ? 'Completar DNI/Carné en perfil' : '—';
+        return `
+          <tr data-student="${escapeHtml(s.studentId)}" data-dni="${escapeHtml(s.dni || '')}">
+            <td>
+              <input type="checkbox" ${checked ? 'checked' : ''} />
+            </td>
+            <td>
+              <div style="font-weight:900;">${escapeHtml(s.label)}</div>
+              <div class="muted" style="font-size:12px; margin-top:2px;">${escapeHtml(s.correo || '')}</div>
+            </td>
+            <td>${escapeHtml(s.dni || '')}</td>
+            <td class="muted">${escapeHtml(obs)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function markAll(isPresent){
+      const tbody = document.getElementById('attendanceTable');
+      const checks = tbody.querySelectorAll('input[type="checkbox"]');
+      checks.forEach(c => c.checked = !!isPresent);
+      toast(isPresent ? 'done_all' : 'remove_done', isPresent ? 'Todos presentes (no guardado aún)' : 'Todos ausentes (no guardado aún)');
+    }
+
+    function saveAttendance(){
+      const activityId = document.getElementById('tallerSelect').value;
+      const session = document.getElementById('sessionSelect').value;
+
+      if(!activityId){
+        toast('warning','Selecciona un taller.');
+        return;
+      }
+
+      const tbody = document.getElementById('attendanceTable');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      if(!rows.length){
+        toast('warning','No hay alumnos para registrar.');
+        return;
+      }
+
+      const presentDnis = [];
+      const presentStudentIds = [];
+
+      for(const tr of rows){
+        const cb = tr.querySelector('input[type="checkbox"]');
+        if(!cb) continue;
+        if(!cb.checked) continue;
+
+        const dni = tr.getAttribute('data-dni') || '';
+        const sid = tr.getAttribute('data-student') || '';
+
+        if(dni) presentDnis.push(dni);
+        if(sid) presentStudentIds.push(sid);
+      }
+
+      const store = getAttendanceStore();
+      if(!store[activityId]) store[activityId] = {};
+
+      store[activityId][session] = {
+        presentDnis,
+        presentStudentIds,
+        total: rows.length,
+        docenteId: currentTeacherId,
+        updatedAt: new Date().toISOString(),
+      };
+
+      setAttendanceStore(store);
+
+      // Actualiza "asistentes" a nivel actividad (agregado para reportes admin)
+      // Nota: aquí guardamos asistentes = presentes en sesión actual (demo simplificado)
+      const acts = getActividades();
+      const idx = acts.findIndex(a => a.id === activityId);
+      if(idx >= 0){
+        acts[idx].asistentes = presentStudentIds.length; // simplificado
+        saveActividades(acts);
+      }
+
+      toast('save', `Asistencia guardada. Presentes: ${presentStudentIds.length}/${rows.length} (Sesión ${session}).`);
+      loadTallerForAttendance();
+      renderReportes();
+    }
+
+    // -----------------------------
+    // Reportes
+    // -----------------------------
+    function renderReportes(){
+      const tbody = document.getElementById('reportTable');
+      const talleres = teacherTalleres();
+      const store = getAttendanceStore();
+
+      if(!talleres.length){
+        tbody.innerHTML = '<tr><td colspan="6" class="muted">No hay talleres asignados.</td></tr>';
+        return;
+      }
+
+      // Armamos filas por taller y sesión 1..3
+      const sessions = ['1','2','3'];
+      const rows = [];
+
+      for(const t of talleres){
+        const enrolled = getEnrolledStudents(t.id);
+        for(const s of sessions){
+          const rec = store?.[t.id]?.[s] || null;
+          const present = rec ? (rec.presentStudentIds?.length || 0) : 0;
+          const total = rec ? (rec.total || enrolled.length) : enrolled.length;
+          const pct = total ? Math.round((present/total)*100) : 0;
+          rows.push({
+            taller: t.nombre,
+            estado: t.estado,
+            inscritos: enrolled.length,
+            session: s,
+            present,
+            pct,
+          });
+        }
+      }
+
+      tbody.innerHTML = rows.map(r => {
+        const pill = (r.pct >= 70) ? '<span class="pill ok">Alta</span>' : (r.pct >= 40 ? '<span class="pill warn">Media</span>' : '<span class="pill danger">Baja</span>');
+        return `
+          <tr>
+            <td><b>${escapeHtml(r.taller)}</b></td>
+            <td>${pillForEstado(r.estado)}</td>
+            <td>${r.inscritos}</td>
+            <td>${r.session}</td>
+            <td>${r.present}</td>
+            <td>${r.pct}% ${pill}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // -----------------------------
+    // Modal confirm (reservado para limpiezas futuras)
+    // -----------------------------
+    let confirmAction = null;
+    function showConfirm(title, text, onOk){
+      confirmAction = onOk;
+      document.getElementById('confirmTitle').textContent = title;
+      document.getElementById('confirmText').textContent = text;
+      const ok = document.getElementById('confirmOk');
+      ok.onclick = () => { hideConfirm(); if(confirmAction) confirmAction(); };
+      document.getElementById('confirmModal').classList.add('show');
+    }
+    function hideConfirm(){
+      document.getElementById('confirmModal').classList.remove('show');
+      confirmAction = null;
+    }
+    function closeModalBackdrop(e){
+      if(e.target.id === 'confirmModal') hideConfirm();
+    }
+
+    // -----------------------------
+    // Init
+    // -----------------------------
+    initTeachers();
+    renderTalleres();
+    initAttendanceUI();
+    renderReportes();
+
+  </script>
+</body>
+</html>
