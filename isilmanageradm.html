@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISILMANAGER | PRY147 (Demo Funcional)</title>
+
+  <!-- Fuente estilo Vuetify -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    :root{
+      --primary:#1976d2;
+      --bg:#f5f7fa;
+      --surface:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --shadow:0 8px 24px rgba(0,0,0,.10);
+      --shadow-sm:0 4px 12px rgba(0,0,0,.08);
+      --radius:14px;
+      --ok:#2e7d32;
+      --warn:#ef6c00;
+      --danger:#d32f2f;
+      --info:#0ea5e9;
+    }
+
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:'Roboto',sans-serif;
+      color:var(--text);
+      background:var(--bg);
+    }
+
+    .app{
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      height:100vh;
+      overflow:hidden;
+    }
+
+    /* Drawer */
+    .drawer{
+      background:var(--surface);
+      border-right:1px solid var(--border);
+      padding:18px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:12px 10px;
+      border-radius:12px;
+      background:linear-gradient(180deg, rgba(25,118,210,.08), rgba(25,118,210,.02));
+    }
+    .brand .badge{
+      width:38px;
+      height:38px;
+      border-radius:12px;
+      background:var(--primary);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      box-shadow:var(--shadow-sm);
+      flex:0 0 auto;
+    }
+    .brand .title{ font-weight:800; letter-spacing:.2px; }
+    .brand .subtitle{ font-size:12px; color:var(--muted); margin-top:2px; }
+
+    .nav-section-label{
+      font-size:12px;
+      color:var(--muted);
+      padding:10px 10px 6px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .nav{ display:flex; flex-direction:column; gap:6px; padding:6px; }
+
+    .nav-item{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 10px;
+      border-radius:12px;
+      cursor:pointer;
+      user-select:none;
+      color:var(--text);
+      transition:.15s ease;
+    }
+    .nav-item:hover{ background:#f1f5f9; }
+    .nav-item.active{ background:rgba(25,118,210,.10); color:var(--primary); }
+    .nav-item .material-icons{ font-size:20px; }
+
+    .drawer-footer{
+      margin-top:auto;
+      padding:10px;
+      border-top:1px solid var(--border);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:#f8fafc;
+      border:1px solid var(--border);
+      color:var(--muted);
+      font-size:12px;
+      width:fit-content;
+    }
+
+    .link{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      text-decoration:none;
+      color:var(--primary);
+      font-weight:600;
+      padding:8px 10px;
+      border-radius:10px;
+      transition:.15s ease;
+    }
+    .link:hover{ background:rgba(25,118,210,.08); }
+
+    /* Main */
+    .main{ display:flex; flex-direction:column; overflow:hidden; }
+
+    .topbar{
+      height:64px;
+      background:var(--surface);
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 18px;
+    }
+
+    .page-title{ font-weight:800; letter-spacing:.2px; }
+    .page-hint{ font-size:12px; color:var(--muted); margin-top:2px; }
+
+    .topbar-right{ display:flex; align-items:center; gap:10px; }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      transition:.15s ease;
+      font-weight:600;
+    }
+    .btn:hover{ box-shadow:var(--shadow-sm); transform:translateY(-1px); }
+
+    .btn-primary{ border-color:rgba(25,118,210,.25); background:rgba(25,118,210,.08); color:var(--primary); }
+    .btn-danger{ border-color:rgba(211,47,47,.25); background:rgba(211,47,47,.08); color:var(--danger); }
+
+    .content{ padding:18px; overflow:auto; }
+
+    .grid{ display:grid; grid-template-columns: repeat(12, 1fr); gap:14px; }
+
+    .card{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow-sm);
+      padding:16px;
+    }
+
+    .card h3{ margin:0 0 10px; font-size:16px; }
+    .muted{ color:var(--muted); }
+
+    .section{ display:none; }
+    .section.active{ display:block; }
+
+    .kpis{ display:grid; grid-template-columns: repeat(12, 1fr); gap:14px; }
+
+    .kpi{ grid-column: span 4; }
+    .kpi .value{ font-size:26px; font-weight:900; margin-top:8px; }
+
+    /* Toolbar inside cards */
+    .toolbar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:12px;
+    }
+
+    .input{
+      flex:1 1 260px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+    }
+
+    .input input, .input select{
+      border:none;
+      outline:none;
+      width:100%;
+      font-family:inherit;
+      font-size:14px;
+      background:transparent;
+      color:var(--text);
+    }
+
+    /* List rows */
+    .list{ display:flex; flex-direction:column; gap:10px; margin-top:12px; }
+
+    .row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:#fff;
+    }
+
+    .row .left{ display:flex; align-items:flex-start; gap:12px; min-width:0; }
+
+    .avatar{
+      width:44px; height:44px;
+      border-radius:14px;
+      background:#e2e8f0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#64748b;
+      font-weight:900;
+      flex:0 0 auto;
+      overflow:hidden;
+    }
+
+    .avatar img{ width:100%; height:100%; object-fit:cover; }
+
+    .row .title{ font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:520px; }
+    .row .sub{ font-size:12px; color:var(--muted); margin-top:4px; line-height:1.35; max-width:520px; }
+
+    .actions{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; align-items:center; }
+
+    .icon-btn{
+      width:40px; height:40px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:#fff;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:.15s ease;
+    }
+    .icon-btn:hover{ box-shadow:var(--shadow-sm); transform:translateY(-1px); }
+
+    .pill{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#f8fafc;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .pill.ok{ background:rgba(56,142,60,.10); border-color:rgba(56,142,60,.20); color:var(--ok); }
+    .pill.warn{ background:rgba(245,124,0,.10); border-color:rgba(245,124,0,.20); color:var(--warn); }
+    .pill.danger{ background:rgba(211,47,47,.10); border-color:rgba(211,47,47,.20); color:var(--danger); }
+
+    /* Progress */
+    .progress{
+      height:10px;
+      border-radius:999px;
+      background:#eef2f7;
+      overflow:hidden;
+      border:1px solid var(--border);
+      margin-top:10px;
+    }
+    .progress > div{ height:100%; background:var(--info); width:0%; }
+
+    /* Table */
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--border);
+      border-radius:16px;
+      background:#fff;
+      margin-top:12px;
+    }
+    th, td{ text-align:left; padding:12px; border-bottom:1px solid var(--border); font-size:14px; }
+    th{ font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
+    tr:last-child td{ border-bottom:none; }
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:50;
+    }
+    .modal-backdrop.show{ display:flex; }
+
+    .modal{
+      width:100%;
+      max-width:760px;
+      background:#fff;
+      border-radius:18px;
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .modal header{
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid var(--border);
+    }
+    .modal header .t{ font-weight:900; }
+
+    .modal .body{ padding:16px; }
+
+    .form-grid{ display:grid; grid-template-columns: repeat(12, 1fr); gap:12px; }
+
+    .field{ grid-column: span 6; display:flex; flex-direction:column; gap:6px; }
+    .field.full{ grid-column: span 12; }
+
+    .field label{ font-size:12px; color:var(--muted); }
+
+    .field input, .field select{
+      padding:12px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      outline:none;
+      font-family:inherit;
+      font-size:14px;
+    }
+
+    .modal footer{
+      padding:14px 16px;
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      border-top:1px solid var(--border);
+      background:#fafafa;
+    }
+
+    /* Toast */
+    .toast{
+      position:fixed;
+      right:16px;
+      bottom:16px;
+      background:#111827;
+      color:#fff;
+      padding:12px 14px;
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      display:none;
+      gap:10px;
+      align-items:flex-start;
+      max-width: 420px;
+      z-index:60;
+    }
+    .toast.show{ display:flex; }
+    .toast .material-icons{ font-size:20px; }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .app{ grid-template-columns: 1fr; }
+      .drawer{ display:none; }
+      .field{ grid-column: span 12; }
+      .kpi{ grid-column: span 12; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- Drawer -->
+    <aside class="drawer">
+      <div class="brand">
+        <div class="badge"><span class="material-icons">admin_panel_settings</span></div>
+        <div>
+          <div class="title">ISILMANAGER</div>
+          <div class="subtitle">Admin | PRY147 (Demo Funcional)</div>
+        </div>
+      </div>
+
+      <div class="nav-section-label">Menú</div>
+      <nav class="nav" id="nav">
+        <div class="nav-item active" data-target="dashboard"><span class="material-icons">dashboard</span><span>Dashboard</span></div>
+        <div class="nav-item" data-target="docentes"><span class="material-icons">groups</span><span>Docentes (CRUD)</span></div>
+        <div class="nav-item" data-target="actividades"><span class="material-icons">event_available</span><span>Actividades (CRUD)</span></div>
+        <div class="nav-item" data-target="formularios"><span class="material-icons">dynamic_form</span><span>Formulario Inicial</span></div>
+        <div class="nav-item" data-target="reportes"><span class="material-icons">query_stats</span><span>Reportes</span></div>
+      </nav>
+
+      <div class="drawer-footer">
+        <div class="chip"><span class="material-icons" style="font-size:18px;">info</span>Incluye: estados + eliminar definitivo (error)</div>
+        <a class="link" href="index.html"><span class="material-icons">arrow_back</span>Volver al Inicio</a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="page-title" id="pageTitle">Dashboard</div>
+          <div class="page-hint" id="pageHint">Resumen general (con datos demo)</div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="btn btn-primary" type="button" id="btnCrear" onclick="handleCreateClick()">
+            <span class="material-icons">add</span>
+            Crear
+          </button>
+          <button class="btn" type="button" onclick="toast('settings','Demo: aquí irían roles/permisos y parámetros de reglas (certificación, cruces, etc.).')">
+            <span class="material-icons">settings</span>
+            Configuración
+          </button>
+        </div>
+      </header>
+
+      <section class="content">
+
+        <!-- DASHBOARD -->
+        <div class="section active" id="section-dashboard">
+          <div class="kpis">
+            <div class="card kpi">
+              <h3>Docentes activos</h3>
+              <div class="muted">Asignables a talleres</div>
+              <div class="value" id="kpiDocentes">—</div>
+            </div>
+            <div class="card kpi">
+              <h3>Talleres publicados</h3>
+              <div class="muted">Publicado / En proceso</div>
+              <div class="value" id="kpiTalleres">—</div>
+            </div>
+            <div class="card kpi">
+              <h3>Control participación</h3>
+              <div class="muted">Inscritos vs asistencia</div>
+              <div class="value" id="kpiParticipacion">—</div>
+            </div>
+          </div>
+
+          <div class="grid" style="margin-top:14px;">
+            <div class="card" style="grid-column: span 12;">
+              <h3>Indicador clave: Inscritos vs asistentes reales</h3>
+              <div class="muted">Este indicador responde al problema principal: muchos se inscriben, pocos asisten.</div>
+              <div class="progress"><div id="progressParticipacion"></div></div>
+              <div class="muted" style="margin-top:8px;" id="lblParticipacion"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DOCENTES -->
+        <div class="section" id="section-docentes">
+          <div class="card">
+            <h3>Docentes (CRUD genérico + estados)</h3>
+            <div class="muted">
+              El administrador puede: <b>crear</b>, <b>editar</b>, <b>desactivar</b> (mantiene histórico) o <b>eliminar definitivo</b> (solo si fue creado por error).
+            </div>
+
+            <div class="toolbar">
+              <div class="input">
+                <span class="material-icons" style="color:#94a3b8;">search</span>
+                <input id="docSearch" type="text" placeholder="Buscar por nombre o correo" oninput="renderDocentes()" />
+              </div>
+              <div class="input" style="flex:0 0 220px;">
+                <span class="material-icons" style="color:#94a3b8;">filter_alt</span>
+                <select id="docFilter" onchange="renderDocentes()">
+                  <option value="ALL">Todos</option>
+                  <option value="ACTIVO">Activos</option>
+                  <option value="INACTIVO">Inactivos</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" onclick="openDocModal('create')"><span class="material-icons">person_add</span>Nuevo docente</button>
+            </div>
+
+            <div class="list" id="docentesList"></div>
+          </div>
+        </div>
+
+        <!-- ACTIVIDADES -->
+        <div class="section" id="section-actividades">
+          <div class="card">
+            <h3>Actividades (Taller / Evento / Club)</h3>
+            <div class="muted">
+              Crear/editar/publicar/cambiar estado. Para <b>taller</b>, se asigna un <b>docente activo</b>. Eliminar definitivo solo por error.
+            </div>
+
+            <div class="toolbar">
+              <div class="input">
+                <span class="material-icons" style="color:#94a3b8;">search</span>
+                <input id="actSearch" type="text" placeholder="Buscar actividad" oninput="renderActividades()" />
+              </div>
+              <div class="input" style="flex:0 0 220px;">
+                <span class="material-icons" style="color:#94a3b8;">tune</span>
+                <select id="actType" onchange="renderActividades()">
+                  <option value="ALL">Todos</option>
+                  <option value="TALLER">Taller</option>
+                  <option value="EVENTO">Evento</option>
+                  <option value="CLUB">Club</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" onclick="openActModal('create')"><span class="material-icons">add</span>Nueva actividad</button>
+            </div>
+
+            <div class="list" id="actividadesList"></div>
+          </div>
+        </div>
+
+        <!-- FORMULARIO -->
+        <div class="section" id="section-formularios">
+          <div class="card">
+            <h3>Formulario Inicial Editable (plantilla)</h3>
+            <div class="muted" style="margin-bottom:12px;">
+              El estudiante lo completa obligatoriamente la primera vez. Luego puede editar. Aquí se administra la plantilla (campos y obligatoriedad).
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Campo</th>
+                  <th>Tipo</th>
+                  <th>Obligatorio</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="formFields"></tbody>
+            </table>
+
+            <div class="toolbar" style="justify-content:flex-end;">
+              <button class="btn btn-primary" onclick="addField()"><span class="material-icons">add</span>Agregar campo</button>
+              <button class="btn" onclick="toast('info','Demo: al guardar, la plantilla se vería en ISILNET estudiante (modal formulario inicial).')"><span class="material-icons">save</span>Guardar plantilla</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- REPORTES -->
+        <div class="section" id="section-reportes">
+          <div class="card">
+            <h3>Reportes y Monitoreo</h3>
+            <div class="muted">Consolidado para control: inscritos vs asistentes, talleres por docente, alumnos y asistencia.</div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Actividad</th>
+                  <th>Tipo</th>
+                  <th>Docente</th>
+                  <th>Inscritos</th>
+                  <th>Asistentes</th>
+                  <th>Participación</th>
+                </tr>
+              </thead>
+              <tbody id="reportTable"></tbody>
+            </table>
+
+            <div class="toolbar" style="justify-content:flex-end;">
+              <button class="btn" onclick="toast('table_view','Demo: exportar a Excel')"><span class="material-icons">table_view</span>Excel</button>
+              <button class="btn" onclick="toast('picture_as_pdf','Demo: exportar a PDF')"><span class="material-icons">picture_as_pdf</span>PDF</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+  </div>
+
+  <!-- Modal Docente -->
+  <div class="modal-backdrop" id="docModal" onclick="closeModalBackdrop(event,'docModal')">
+    <div class="modal" onclick="event.stopPropagation()">
+      <header>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="material-icons" style="color:var(--primary);">groups</span>
+          <div>
+            <div class="t" id="docModalTitle">Docente</div>
+            <div class="muted" style="font-size:12px; margin-top:2px;">Crear / Editar / Estado</div>
+          </div>
+        </div>
+        <button class="btn" onclick="hideModal('docModal')"><span class="material-icons">close</span></button>
+      </header>
+
+      <div class="body">
+        <div class="form-grid">
+          <div class="field">
+            <label>Nombres</label>
+            <input id="docNombres" type="text" placeholder="Ej. Marco" />
+          </div>
+          <div class="field">
+            <label>Apellidos</label>
+            <input id="docApellidos" type="text" placeholder="Ej. Díaz" />
+          </div>
+          <div class="field">
+            <label>Correo</label>
+            <input id="docCorreo" type="email" placeholder="nombre@isil.pe" />
+          </div>
+          <div class="field">
+            <label>Estado</label>
+            <select id="docEstado">
+              <option value="ACTIVO">Activo</option>
+              <option value="INACTIVO">Inactivo</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>Foto (URL) – opcional</label>
+            <input id="docFoto" type="text" placeholder="https://.../foto.jpg" />
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <button class="btn" onclick="hideModal('docModal')"><span class="material-icons">close</span>Cancelar</button>
+        <button class="btn btn-primary" onclick="saveDocente()"><span class="material-icons">save</span>Guardar</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal Actividad -->
+  <div class="modal-backdrop" id="actModal" onclick="closeModalBackdrop(event,'actModal')">
+    <div class="modal" onclick="event.stopPropagation()">
+      <header>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="material-icons" style="color:var(--primary);">event_available</span>
+          <div>
+            <div class="t" id="actModalTitle">Actividad</div>
+            <div class="muted" style="font-size:12px; margin-top:2px;">Taller / Evento / Club</div>
+          </div>
+        </div>
+        <button class="btn" onclick="hideModal('actModal')"><span class="material-icons">close</span></button>
+      </header>
+
+      <div class="body">
+        <div class="form-grid">
+          <div class="field">
+            <label>Tipo</label>
+            <select id="actTipo" onchange="toggleDocenteField()">
+              <option value="TALLER">Taller</option>
+              <option value="EVENTO">Evento</option>
+              <option value="CLUB">Club</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Estado</label>
+            <select id="actEstado">
+              <option value="BORRADOR">Borrador</option>
+              <option value="PUBLICADO">Publicado</option>
+              <option value="EN_PROCESO">En proceso</option>
+              <option value="FINALIZADO">Finalizado</option>
+              <option value="CANCELADO">Cancelado</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>Nombre</label>
+            <input id="actNombre" type="text" placeholder="Ej. Excel para gestión" />
+          </div>
+          <div class="field full">
+            <label>Horario (texto)</label>
+            <input id="actHorario" type="text" placeholder="Ej. Lun/Mié 18:00-19:30" />
+          </div>
+          <div class="field">
+            <label>Cupos</label>
+            <input id="actCupos" type="number" min="1" placeholder="Ej. 30" />
+          </div>
+          <div class="field" id="docenteField">
+            <label>Docente (solo Taller)</label>
+            <select id="actDocente"></select>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <button class="btn" onclick="hideModal('actModal')"><span class="material-icons">close</span>Cancelar</button>
+        <button class="btn btn-primary" onclick="saveActividad()"><span class="material-icons">save</span>Guardar</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="material-icons" id="toastIcon">info</span>
+    <div>
+      <div style="font-weight:800;" id="toastTitle">Aviso</div>
+      <div style="opacity:.9; margin-top:2px; font-size:13px; line-height:1.35;" id="toastText">—</div>
+    </div>
+  </div>
+
+  <script>
+    // -----------------------------
+    // Estado global (Demo)
+    // -----------------------------
+    const state = {
+      current: 'dashboard',
+      modalMode: null, // 'create' | 'edit'
+      editingId: null,
+      docentes: [
+        { id: 'D1', nombres: 'Marco', apellidos: 'Díaz', correo: 'marco.diaz@isil.pe', estado: 'ACTIVO', foto: '' },
+        { id: 'D2', nombres: 'Olga Gabriela', apellidos: 'Ramírez', correo: 'olga.ramirez@isil.pe', estado: 'INACTIVO', foto: '' },
+        { id: 'D3', nombres: 'Diego', apellidos: 'Benner', correo: 'diego.benner@isil.pe', estado: 'ACTIVO', foto: '' },
+      ],
+      actividades: [
+        { id: 'A1', tipo: 'TALLER', nombre: 'Excel para gestión', horario: 'Lun/Mié 18:00-19:30', cupos: 30, docenteId: 'D1', estado: 'EN_PROCESO', inscritos: 15, asistentes: 10 },
+        { id: 'A2', tipo: 'TALLER', nombre: 'Liderazgo y comunicación', horario: 'Mar/Jue 18:00-19:30', cupos: 30, docenteId: 'D3', estado: 'PUBLICADO', inscritos: 30, asistentes: 0 },
+        { id: 'A3', tipo: 'EVENTO', nombre: 'Charla: Empleabilidad 2026', horario: 'Vie 17:00-18:00', cupos: 200, docenteId: null, estado: 'FINALIZADO', inscritos: 120, asistentes: 95 },
+        { id: 'A4', tipo: 'CLUB', nombre: 'Club Organización Estudiantil', horario: '—', cupos: 80, docenteId: null, estado: 'PUBLICADO', inscritos: 15, asistentes: 0 },
+      ],
+      formFields: [
+        { id: 'F1', campo: 'DNI/Carné', tipo: 'texto', obligatorio: true },
+        { id: 'F2', campo: 'Nombres', tipo: 'texto', obligatorio: true },
+        { id: 'F3', campo: 'Apellidos', tipo: 'texto', obligatorio: true },
+        { id: 'F4', campo: 'Correo', tipo: 'email', obligatorio: true },
+        { id: 'F5', campo: 'Celular', tipo: 'texto', obligatorio: false },
+        { id: 'F6', campo: 'Carrera', tipo: 'lista', obligatorio: true },
+      ],
+    };
+
+    const titles = {
+      dashboard: { title: 'Dashboard', hint: 'Resumen general (con datos demo)' },
+      docentes: { title: 'Docentes', hint: 'CRUD genérico + estados + eliminar definitivo (error)' },
+      actividades: { title: 'Actividades', hint: 'Taller / Evento / Club + asignación docente + estados' },
+      formularios: { title: 'Formulario Inicial', hint: 'Plantilla editable de campos (tipo Google Form)' },
+      reportes: { title: 'Reportes', hint: 'Inscritos vs asistencia + talleres por docente + exportación' },
+    };
+
+    // -----------------------------
+    // Navegación
+    // -----------------------------
+    function setActive(target){
+      state.current = target;
+
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.target === target);
+      });
+
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      const section = document.getElementById(`section-${target}`);
+      if(section) section.classList.add('active');
+
+      const meta = titles[target] || { title: 'ISILMANAGER', hint: 'Demo' };
+      document.getElementById('pageTitle').textContent = meta.title;
+      document.getElementById('pageHint').textContent = meta.hint;
+
+      document.querySelector('.content').scrollTop = 0;
+
+      // render
+      if(target === 'dashboard') renderDashboard();
+      if(target === 'docentes') renderDocentes();
+      if(target === 'actividades') renderActividades();
+      if(target === 'formularios') renderFormFields();
+      if(target === 'reportes') renderReportes();
+    }
+
+    document.getElementById('nav').addEventListener('click', (e) => {
+      const item = e.target.closest('.nav-item');
+      if(!item) return;
+      setActive(item.dataset.target);
+    });
+
+    function handleCreateClick(){
+      if(state.current === 'docentes') return openDocModal('create');
+      if(state.current === 'actividades') return openActModal('create');
+      toast('info', 'Tip: entra a Docentes o Actividades para usar “Crear”.');
+    }
+
+    // -----------------------------
+    // Helpers
+    // -----------------------------
+    function uid(prefix){
+      return prefix + Math.random().toString(16).slice(2, 8).toUpperCase();
+    }
+
+    function initials(nombres, apellidos){
+      const n = (nombres || '').trim();
+      const a = (apellidos || '').trim();
+      return ((n[0] || 'D') + (a[0] || 'C')).toUpperCase();
+    }
+
+    function pillEstadoDocente(estado){
+      if(estado === 'ACTIVO') return '<span class="pill ok">Activo</span>';
+      return '<span class="pill warn">Inactivo</span>';
+    }
+
+    function pillEstadoActividad(estado){
+      const map = {
+        BORRADOR: '<span class="pill">Borrador</span>',
+        PUBLICADO: '<span class="pill info">Publicado</span>',
+        EN_PROCESO: '<span class="pill ok">En proceso</span>',
+        FINALIZADO: '<span class="pill">Finalizado</span>',
+        CANCELADO: '<span class="pill danger">Cancelado</span>',
+      };
+      return map[estado] || '<span class="pill">—</span>';
+    }
+
+    function docenteLabelById(id){
+      if(!id) return '—';
+      const d = state.docentes.find(x => x.id === id);
+      return d ? `${d.nombres} ${d.apellidos}` : '—';
+    }
+
+    function closeModalBackdrop(e, modalId){
+      if(e.target.id === modalId) hideModal(modalId);
+    }
+
+    function showModal(modalId){
+      document.getElementById(modalId).classList.add('show');
+    }
+
+    function hideModal(modalId){
+      document.getElementById(modalId).classList.remove('show');
+      state.modalMode = null;
+      state.editingId = null;
+    }
+
+    function toast(icon, text){
+      const t = document.getElementById('toast');
+      document.getElementById('toastIcon').textContent = icon;
+      document.getElementById('toastTitle').textContent = 'Aviso';
+      document.getElementById('toastText').textContent = text;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3600);
+    }
+
+    // -----------------------------
+    // Dashboard
+    // -----------------------------
+    function renderDashboard(){
+      const docentesActivos = state.docentes.filter(d => d.estado === 'ACTIVO').length;
+      const talleresPub = state.actividades.filter(a => a.tipo === 'TALLER' && (a.estado === 'PUBLICADO' || a.estado === 'EN_PROCESO')).length;
+
+      const totalIns = state.actividades.reduce((acc,a) => acc + (a.inscritos || 0), 0);
+      const totalAsis = state.actividades.reduce((acc,a) => acc + (a.asistentes || 0), 0);
+      const ratio = totalIns > 0 ? Math.round((totalAsis/totalIns)*100) : 0;
+
+      document.getElementById('kpiDocentes').textContent = docentesActivos;
+      document.getElementById('kpiTalleres').textContent = talleresPub;
+      document.getElementById('kpiParticipacion').textContent = `${ratio}%`;
+
+      document.getElementById('progressParticipacion').style.width = `${Math.min(ratio,100)}%`;
+      document.getElementById('lblParticipacion').textContent = `Asistentes ${totalAsis} / Inscritos ${totalIns}  → Participación ${ratio}% (demo)`;
+    }
+
+    // -----------------------------
+    // Docentes (CRUD)
+    // -----------------------------
+    function renderDocentes(){
+      const q = (document.getElementById('docSearch')?.value || '').toLowerCase().trim();
+      const f = (document.getElementById('docFilter')?.value || 'ALL');
+
+      const list = document.getElementById('docentesList');
+      if(!list) return;
+
+      const filtered = state.docentes.filter(d => {
+        const matchesQ = !q || `${d.nombres} ${d.apellidos} ${d.correo}`.toLowerCase().includes(q);
+        const matchesF = (f === 'ALL') || (d.estado === f);
+        return matchesQ && matchesF;
+      });
+
+      if(filtered.length === 0){
+        list.innerHTML = '<div class="muted" style="padding:10px;">No hay docentes para mostrar.</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(d => {
+        const avatar = d.foto
+          ? `<div class="avatar"><img src="${d.foto}" alt="${d.nombres}" onerror="this.remove(); this.parentElement.textContent='${initials(d.nombres,d.apellidos)}';" /></div>`
+          : `<div class="avatar">${initials(d.nombres,d.apellidos)}</div>`;
+
+        return `
+          <div class="row">
+            <div class="left">
+              ${avatar}
+              <div style="min-width:0;">
+                <div class="title">${d.nombres} ${d.apellidos}</div>
+                <div class="sub">${d.correo} • ID: ${d.id}</div>
+                <div style="margin-top:10px;">${pillEstadoDocente(d.estado)}</div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="icon-btn" title="Editar" onclick="openDocModal('edit','${d.id}')"><span class="material-icons">edit</span></button>
+              ${d.estado === 'ACTIVO'
+                ? `<button class="icon-btn" title="Desactivar" onclick="toggleDocEstado('${d.id}','INACTIVO')"><span class="material-icons">toggle_off</span></button>`
+                : `<button class="icon-btn" title="Activar" onclick="toggleDocEstado('${d.id}','ACTIVO')"><span class="material-icons">toggle_on</span></button>`
+              }
+              <button class="icon-btn" title="Eliminar definitivo (solo por error)" onclick="deleteDocente('${d.id}')"><span class="material-icons">delete</span></button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openDocModal(mode, id=null){
+      state.modalMode = mode;
+      state.editingId = id;
+
+      document.getElementById('docModalTitle').textContent = mode === 'create' ? 'Nuevo docente' : 'Editar docente';
+
+      if(mode === 'edit'){
+        const d = state.docentes.find(x => x.id === id);
+        document.getElementById('docNombres').value = d?.nombres || '';
+        document.getElementById('docApellidos').value = d?.apellidos || '';
+        document.getElementById('docCorreo').value = d?.correo || '';
+        document.getElementById('docEstado').value = d?.estado || 'ACTIVO';
+        document.getElementById('docFoto').value = d?.foto || '';
+      } else {
+        document.getElementById('docNombres').value = '';
+        document.getElementById('docApellidos').value = '';
+        document.getElementById('docCorreo').value = '';
+        document.getElementById('docEstado').value = 'ACTIVO';
+        document.getElementById('docFoto').value = '';
+      }
+
+      showModal('docModal');
+    }
+
+    function saveDocente(){
+      const nombres = document.getElementById('docNombres').value.trim();
+      const apellidos = document.getElementById('docApellidos').value.trim();
+      const correo = document.getElementById('docCorreo').value.trim();
+      const estado = document.getElementById('docEstado').value;
+      const foto = document.getElementById('docFoto').value.trim();
+
+      if(!nombres || !apellidos || !correo){
+        toast('warning', 'Completa: nombres, apellidos y correo.');
+        return;
+      }
+
+      if(state.modalMode === 'create'){
+        state.docentes.unshift({ id: uid('D'), nombres, apellidos, correo, estado, foto });
+        toast('check_circle', 'Docente creado (demo).');
+      } else {
+        const idx = state.docentes.findIndex(x => x.id === state.editingId);
+        if(idx >= 0){
+          state.docentes[idx] = { ...state.docentes[idx], nombres, apellidos, correo, estado, foto };
+          toast('check_circle', 'Docente actualizado (demo).');
+        }
+      }
+
+      // si un docente queda inactivo, y está asignado a talleres, no lo eliminamos; solo quedará no-asignable.
+      hideModal('docModal');
+      renderDocentes();
+      renderActividades();
+      renderDashboard();
+      renderReportes();
+    }
+
+    function toggleDocEstado(id, nuevoEstado){
+      const d = state.docentes.find(x => x.id === id);
+      if(!d) return;
+      d.estado = nuevoEstado;
+      toast('check_circle', `Docente ${nuevoEstado === 'ACTIVO' ? 'activado' : 'desactivado'} (demo).`);
+      renderDocentes();
+      renderActividades();
+      renderDashboard();
+    }
+
+    function deleteDocente(id){
+      const d = state.docentes.find(x => x.id === id);
+      if(!d) return;
+
+      const assigned = state.actividades.some(a => a.docenteId === id);
+      const warn = assigned
+        ? 'Este docente está asignado a uno o más talleres. Si lo eliminas, esos talleres quedarán sin docente asignado.'
+        : 'Eliminar definitivo es solo para registros creados por error.';
+
+      if(!confirm(`¿Eliminar definitivamente a ${d.nombres} ${d.apellidos}?\n\n${warn}`)) return;
+
+      // desasigna en actividades
+      state.actividades.forEach(a => { if(a.docenteId === id) a.docenteId = null; });
+
+      state.docentes = state.docentes.filter(x => x.id !== id);
+      toast('delete', 'Docente eliminado definitivamente (demo).');
+      renderDocentes();
+      renderActividades();
+      renderReportes();
+      renderDashboard();
+    }
+
+    // -----------------------------
+    // Actividades (CRUD)
+    // -----------------------------
+    function renderActividades(){
+      const q = (document.getElementById('actSearch')?.value || '').toLowerCase().trim();
+      const t = (document.getElementById('actType')?.value || 'ALL');
+
+      const list = document.getElementById('actividadesList');
+      if(!list) return;
+
+      const filtered = state.actividades.filter(a => {
+        const matchesQ = !q || `${a.nombre} ${a.horario}`.toLowerCase().includes(q);
+        const matchesT = (t === 'ALL') || (a.tipo === t);
+        return matchesQ && matchesT;
+      });
+
+      if(filtered.length === 0){
+        list.innerHTML = '<div class="muted" style="padding:10px;">No hay actividades para mostrar.</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(a => {
+        const pct = a.cupos ? Math.min(100, Math.round(((a.inscritos||0)/a.cupos)*100)) : 0;
+        const docenteTxt = a.tipo === 'TALLER' ? docenteLabelById(a.docenteId) : '—';
+
+        return `
+          <div class="row">
+            <div class="left">
+              <div class="avatar"><span class="material-icons">${a.tipo === 'TALLER' ? 'school' : (a.tipo === 'EVENTO' ? 'event' : 'diversity_3')}</span></div>
+              <div style="min-width:0;">
+                <div class="title">${a.tipo}: ${a.nombre}</div>
+                <div class="sub"><b>Horario:</b> ${a.horario} • <b>Cupos:</b> ${a.inscritos||0}/${a.cupos} • <b>Docente:</b> ${docenteTxt}</div>
+                <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+                  ${pillEstadoActividad(a.estado)}
+                  <span class="pill">Inscritos ${a.inscritos||0}</span>
+                  <span class="pill">Asistentes ${a.asistentes||0}</span>
+                </div>
+                <div class="progress"><div style="width:${pct}%;"></div></div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="icon-btn" title="Editar" onclick="openActModal('edit','${a.id}')"><span class="material-icons">edit</span></button>
+              <button class="icon-btn" title="Cambiar estado" onclick="cycleActState('${a.id}')"><span class="material-icons">published_with_changes</span></button>
+              <button class="icon-btn" title="Eliminar definitivo (solo por error)" onclick="deleteActividad('${a.id}')"><span class="material-icons">delete</span></button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // refresca combo docentes en modal (por si se abrió)
+      fillDocentesSelect();
+    }
+
+    function fillDocentesSelect(selectedId=null){
+      const sel = document.getElementById('actDocente');
+      if(!sel) return;
+
+      const activos = state.docentes.filter(d => d.estado === 'ACTIVO');
+      sel.innerHTML = '<option value="">— Seleccionar docente —</option>' + activos.map(d => {
+        const val = d.id;
+        const txt = `${d.nombres} ${d.apellidos}`;
+        return `<option value="${val}" ${selectedId === val ? 'selected' : ''}>${txt}</option>`;
+      }).join('');
+    }
+
+    function toggleDocenteField(){
+      const tipo = document.getElementById('actTipo').value;
+      const field = document.getElementById('docenteField');
+      field.style.display = (tipo === 'TALLER') ? 'flex' : 'none';
+    }
+
+    function openActModal(mode, id=null){
+      state.modalMode = mode;
+      state.editingId = id;
+
+      document.getElementById('actModalTitle').textContent = mode === 'create' ? 'Nueva actividad' : 'Editar actividad';
+
+      if(mode === 'edit'){
+        const a = state.actividades.find(x => x.id === id);
+        document.getElementById('actTipo').value = a?.tipo || 'TALLER';
+        document.getElementById('actEstado').value = a?.estado || 'BORRADOR';
+        document.getElementById('actNombre').value = a?.nombre || '';
+        document.getElementById('actHorario').value = a?.horario || '';
+        document.getElementById('actCupos').value = a?.cupos || 30;
+        fillDocentesSelect(a?.docenteId || null);
+        document.getElementById('actDocente').value = a?.docenteId || '';
+      } else {
+        document.getElementById('actTipo').value = 'TALLER';
+        document.getElementById('actEstado').value = 'BORRADOR';
+        document.getElementById('actNombre').value = '';
+        document.getElementById('actHorario').value = '';
+        document.getElementById('actCupos').value = 30;
+        fillDocentesSelect(null);
+        document.getElementById('actDocente').value = '';
+      }
+
+      toggleDocenteField();
+      showModal('actModal');
+    }
+
+    function saveActividad(){
+      const tipo = document.getElementById('actTipo').value;
+      const estado = document.getElementById('actEstado').value;
+      const nombre = document.getElementById('actNombre').value.trim();
+      const horario = document.getElementById('actHorario').value.trim();
+      const cupos = parseInt(document.getElementById('actCupos').value, 10);
+      const docenteId = (tipo === 'TALLER') ? (document.getElementById('actDocente').value || null) : null;
+
+      if(!nombre){ toast('warning','Completa el nombre de la actividad.'); return; }
+      if(!cupos || cupos < 1){ toast('warning','Cupos debe ser mayor a 0.'); return; }
+
+      if(tipo === 'TALLER'){
+        if(!docenteId){ toast('warning','Para Taller, selecciona un docente activo.'); return; }
+      }
+
+      if(state.modalMode === 'create'){
+        state.actividades.unshift({
+          id: uid('A'), tipo, estado, nombre, horario: horario || '—', cupos,
+          docenteId,
+          inscritos: 0,
+          asistentes: 0,
+        });
+        toast('check_circle','Actividad creada (demo).');
+      } else {
+        const idx = state.actividades.findIndex(x => x.id === state.editingId);
+        if(idx >= 0){
+          state.actividades[idx] = {
+            ...state.actividades[idx],
+            tipo, estado, nombre, horario: horario || '—', cupos, docenteId,
+          };
+          toast('check_circle','Actividad actualizada (demo).');
+        }
+      }
+
+      hideModal('actModal');
+      renderActividades();
+      renderReportes();
+      renderDashboard();
+    }
+
+    function cycleActState(id){
+      const a = state.actividades.find(x => x.id === id);
+      if(!a) return;
+      const order = ['BORRADOR','PUBLICADO','EN_PROCESO','FINALIZADO','CANCELADO'];
+      const i = order.indexOf(a.estado);
+      a.estado = order[(i + 1) % order.length];
+      toast('published_with_changes', `Estado actualizado: ${a.estado} (demo).`);
+      renderActividades();
+      renderReportes();
+      renderDashboard();
+    }
+
+    function deleteActividad(id){
+      const a = state.actividades.find(x => x.id === id);
+      if(!a) return;
+      if(!confirm(`¿Eliminar definitivamente la actividad?\n\n${a.tipo}: ${a.nombre}\n\nNota: eliminar definitivo solo aplica si fue creado por error.`)) return;
+      state.actividades = state.actividades.filter(x => x.id !== id);
+      toast('delete','Actividad eliminada definitivamente (demo).');
+      renderActividades();
+      renderReportes();
+      renderDashboard();
+    }
+
+    // -----------------------------
+    // Formulario
+    // -----------------------------
+    function renderFormFields(){
+      const tbody = document.getElementById('formFields');
+      tbody.innerHTML = state.formFields.map(f => {
+        return `
+          <tr>
+            <td><b>${f.campo}</b></td>
+            <td>${f.tipo}</td>
+            <td>${f.obligatorio ? '<span class="pill ok">Sí</span>' : '<span class="pill">No</span>'}</td>
+            <td>
+              <button class="icon-btn" title="Cambiar obligatorio" onclick="toggleField('${f.id}')"><span class="material-icons">rule</span></button>
+              <button class="icon-btn" title="Eliminar campo" onclick="removeField('${f.id}')"><span class="material-icons">delete</span></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function addField(){
+      const name = prompt('Nombre del campo (ej. Dirección):');
+      if(!name) return;
+      state.formFields.push({ id: uid('F'), campo: name.trim(), tipo: 'texto', obligatorio: false });
+      renderFormFields();
+      toast('check_circle','Campo agregado (demo).');
+    }
+
+    function toggleField(id){
+      const f = state.formFields.find(x => x.id === id);
+      if(!f) return;
+      f.obligatorio = !f.obligatorio;
+      renderFormFields();
+      toast('check_circle','Campo actualizado (demo).');
+    }
+
+    function removeField(id){
+      if(!confirm('¿Eliminar campo de la plantilla?')) return;
+      state.formFields = state.formFields.filter(x => x.id !== id);
+      renderFormFields();
+      toast('delete','Campo eliminado (demo).');
+    }
+
+    // -----------------------------
+    // Reportes
+    // -----------------------------
+    function renderReportes(){
+      const tbody = document.getElementById('reportTable');
+      if(!tbody) return;
+
+      const rows = state.actividades.map(a => {
+        const ins = a.inscritos || 0;
+        const asis = a.asistentes || 0;
+        const pct = ins > 0 ? Math.round((asis/ins)*100) : 0;
+        const docente = a.tipo === 'TALLER' ? docenteLabelById(a.docenteId) : '—';
+
+        const pill = pct >= 70 ? '<span class="pill ok">Alta</span>' : (pct >= 40 ? '<span class="pill warn">Media</span>' : '<span class="pill danger">Baja</span>');
+
+        return `
+          <tr>
+            <td><b>${a.nombre}</b></td>
+            <td>${a.tipo}</td>
+            <td>${docente}</td>
+            <td>${ins}</td>
+            <td>${asis}</td>
+            <td>${pct}% ${pill}</td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = rows.join('');
+    }
+
+    // -----------------------------
+    // Init
+    // -----------------------------
+    // Render default
+    renderDashboard();
+
+    // When switching to activities, ensure selects updated
+    fillDocentesSelect();
+  </script>
+</body>
+</html>
